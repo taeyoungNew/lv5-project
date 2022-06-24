@@ -21,7 +21,7 @@ export default {
   },
   methods: {
     getWeatherdata() {
-      console.log("showWeatherPage");
+      console.log("dddshowWeatherPage");
       fetchWeatherData()
         .then(function (res) {
           console.log(res);
