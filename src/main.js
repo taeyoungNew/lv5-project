@@ -1,7 +1,7 @@
 import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
-import store from "./store";
+import store from "@/store/index";
 import vuetify from "./plugins/vuetify";
 import "material-design-icons-iconfont/dist/material-design-icons.css";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -14,7 +14,9 @@ import {
   faFaceAngry,
   faMoon,
   faFaceLaughBeam,
+  faFaceMeh,
 } from "@fortawesome/free-regular-svg-icons";
+
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 import "vuetify/dist/vuetify.min.css";
@@ -25,7 +27,8 @@ library.add(
   faFaceFrown,
   faFaceAngry,
   faMoon,
-  faFaceLaughBeam
+  faFaceLaughBeam,
+  faFaceMeh
 );
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 
