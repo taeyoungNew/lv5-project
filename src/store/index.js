@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import { fetchData, fetchWeatherData } from "@/api/index";
+import { fetchData, getShortTermForecast } from "@/api/index";
 
 Vue.use(Vuex);
 Vue.config.devtools = true;
@@ -49,7 +49,7 @@ export default new Vuex.Store({
     GET_GRIDS(context, gridXY) {
       console.log("gridXY= ", gridXY["gridX"], gridXY["gridY"]);
       context.commit("SAVE_GRIDS", gridXY);
-      fetchWeatherData()
+      getShortTermForecast()
         .then(function (res) {
           console.log(res);
           context.commit(

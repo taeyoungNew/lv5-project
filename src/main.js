@@ -5,14 +5,23 @@ import store from "@/store/index";
 import vuetify from "./plugins/vuetify";
 import "material-design-icons-iconfont/dist/material-design-icons.css";
 import { library } from "@fortawesome/fontawesome-svg-core";
-// import { faUserSecret } from "@fortawesome/free-solid-svg-icons";
+import {
+  faSun,
+  faCloud,
+  faCloudBolt,
+  faCloudRain,
+  faCloudShowersHeavy,
+  faMoon,
+  faWind,
+  faTemperatureHalf,
+  faDroplet,
+} from "@fortawesome/free-solid-svg-icons";
 import {
   faFaceGrinSquint,
   faFaceLaugh,
   faFaceGrinWide,
   faFaceFrown,
   faFaceAngry,
-  faMoon,
   faFaceLaughBeam,
   faFaceMeh,
 } from "@fortawesome/free-regular-svg-icons";
@@ -26,9 +35,17 @@ library.add(
   faFaceGrinWide,
   faFaceFrown,
   faFaceAngry,
-  faMoon,
   faFaceLaughBeam,
-  faFaceMeh
+  faFaceMeh,
+  faSun,
+  faCloud,
+  faCloudBolt,
+  faCloudRain,
+  faCloudShowersHeavy,
+  faMoon,
+  faWind,
+  faTemperatureHalf,
+  faDroplet
 );
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 

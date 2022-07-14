@@ -85,7 +85,7 @@ export default {
         const gridX = latlng.getLat();
         const gridY = latlng.getLng();
         getGridXY(gridX, gridY);
-        console.log(gridX, gridY);
+        // console.log(gridX, gridY);
 
         // const payLoad = {
         //   gridX: gridX,

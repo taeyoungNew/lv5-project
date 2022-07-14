@@ -108,7 +108,7 @@ export default {
     //   }
     // },
     detailsInfo(params) {
-      console.log("검색한 미세먼지: ", params);
+      // console.log("검색한 미세먼지: ", params);
 
       if (params !== "" || null) {
         this.detailDatas = [
@@ -143,7 +143,7 @@ export default {
   },
   watch: {
     checkAirData(val) {
-      console.log("watch checkAirData 호출 = ", val);
+      // console.log("watch checkAirData 호출 = ", val);
       this.detailsInfo(val);
     },
   },

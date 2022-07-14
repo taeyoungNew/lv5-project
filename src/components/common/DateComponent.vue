@@ -1,8 +1,7 @@
 <template>
   <div>
-    <p class="date">{{ date }}</p>
     <p class="pakatime">
-      {{ hours | toHuman }} : {{ minutes | toHuman }} :
+      {{ date }} {{ hours | toHuman }} : {{ minutes | toHuman }} :
       {{ seconds | toHuman }}
     </p>
   </div>
@@ -56,4 +55,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+p {
+  margin: 0;
+}
+</style>

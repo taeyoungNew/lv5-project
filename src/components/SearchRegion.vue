@@ -59,11 +59,10 @@ export default {
           x.stationName === this.findArea.replace(/(\s*)/g, "") ||
           x.sidoStation === this.findArea.replace(/(\s*)/g, "")
       );
-      console.log("dataNum = " + dataNum);
       this.$store.dispatch("SEARCH_DATA_NUM", dataNum);
       if (this.$store.state.findAreaData) {
         // this.$router.push("weather-page");
-        console.log("주소를 찾았어요");
+        // console.log("주소를 찾았어요");
       } else {
         if (this.findArea === "") {
           alert("주소를 검색해주세요");
@@ -119,7 +118,7 @@ export default {
       }
     },
     async selectArea(stationName) {
-      console.log(stationName);
+      // console.log(stationName);
       this.findArea = stationName;
 
       await this.searchAreaInfo();

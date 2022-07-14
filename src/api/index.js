@@ -1,8 +1,14 @@
 import axios from "axios";
 import store from "@/store/index";
+// import { get } from "core-js/core/dict";
+// import { getMetadataKeys } from "core-js/fn/reflect";
 
 const weatherDatasKey =
   "UkRbyOIUcZ8nSFUYHH4gbSjw2NPG0hjOkLMa8fUlkNpnstI7CbHORuOta%2BI8WusIGFq9AgdYa2vOaCeIYTi%2Bpw%3D%3D";
+
+const findMetStationKey =
+  "UkRbyOIUcZ8nSFUYHH4gbSjw2NPG0hjOkLMa8fUlkNpnstI7CbHORuOta%2BI8WusIGFq9AgdYa2vOaCeIYTi%2Bpw%3D%3D";
+
 function createInstance() {
   return axios.create({
     baseURL: process.env.VUE_APP_API_URL,
@@ -20,11 +26,17 @@ function fetchData(param) {
     );
   }
 }
-function fetchWeatherData() {
-  console.log(store.state.gridX);
+
+function findMetStation() {
   return axios.get(
-    `/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst?serviceKey=${weatherDatasKey}&dataType=json&numOfRows=100&pageNo=1&base_date=20220711&base_time=0000&nx=${store.state.gridX}&ny=${store.state.gridY}`
-    // `/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst?serviceKey=${weatherDatasKey}&numOfRows=10&pageNo=1&dataType=json&base_date=20220710&base_time=2300&nx=${store.state.gridX}&ny=${store.state.gridY}`
+    `http://apis.data.go.kr/B552584/MsrstnInfoInqireSvc/getNearbyMsrstnList?tmX=244148.546388&tmY=412423.75772&returnType=json&serviceKey=${findMetStationKey}`
+  );
+}
+// getShortTermForecast
+// fetchWeatherData
+function getShortTermForecast() {
+  return axios.get(
+    `/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst?serviceKey=${weatherDatasKey}&dataType=json&numOfRows=100&pageNo=1&base_date=20220714&base_time=1330&nx=${store.state.gridX}&ny=${store.state.gridY}`
   );
 }
 
@@ -35,7 +47,7 @@ function fetchWeatherData() {
 // }
 
 function getGridXY(getLat, getLng) {
-  console.log("getGridXY= ", getLat, getLng);
+  // console.log("getGridXY= ", getLat, getLng);
   let RE = 6371.00877; // 지구 반경(km)
   let GRID = 5.0; // 격자 간격(km)
   let SLAT1 = 30.0; // 투영 위도1(degree)
@@ -74,7 +86,7 @@ function getGridXY(getLat, getLng) {
   rs["x"] = Math.floor(ra * Math.sin(theta) + XO + 0.5);
   rs["y"] = Math.floor(ro - ra * Math.cos(theta) + YO + 0.5);
 
-  console.log(rs["x"], rs["y"]);
+  // console.log(rs["x"], rs["y"]);
 
   const grids = {
     gridX: rs["x"],
@@ -93,14 +105,45 @@ function getCoordinate() {
     if (status === kakao.maps.services.Status.OK) {
       const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
 
-      console.log("검색한 주소의 좌표 = ", coords);
+      // console.log("검색한 주소의 좌표 = ", coords);
       getGridXY(coords.Ma, coords.La);
     } else {
       console.log("못찾았어요ㅜ ");
     }
   });
-  console.log("getCoordinate = ", serachAddress);
+  // console.log("getCoordinate = ", serachAddress);
 }
 
+// function getTimeNow() {
+//   let mycurrentDate = new Date();
+//   let hours = mycurrentDate.getHours();
+//   let minutes = mycurrentDate.getMinutes();
+//   let seconds = mycurrentDate.getSeconds();
+//   let date =
+//     this.sysPaddingZro(mycurrentDate.getFullYear(), 4) +
+//     "-" +
+//     this.sysPaddingZro(mycurrentDate.getMonth() + 1, 2) +
+//     "-" +
+//     this.sysPaddingZro(mycurrentDate.getDate(), 2) +
+//     " " +
+//     this.customDate[mycurrentDate.getDay()];
+
+//   const nowTime = {
+//     hours: hours,
+//     minutes: minutes,
+//     seconds: seconds,
+//     date: date,
+//   };
+
+//   return nowTime;
+// }
+
 export const instance = createInstance();
-export { getCoordinate, getGridXY, fetchData, fetchWeatherData };
+export {
+  getCoordinate,
+  getGridXY,
+  fetchData,
+  getShortTermForecast,
+  // getTimeNow,
+  findMetStation,
+};
