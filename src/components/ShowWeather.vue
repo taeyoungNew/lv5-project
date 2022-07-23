@@ -11,14 +11,10 @@
           </font-awesome-icon>
         </v-col>
         <font-awesome-icon icon="fa-solid fa-temperature-half " class="fa-3x" />
-        <v-col class="text-h2" cols="6" v-if="nowWeather">
-          {{ nowWeather[0].fcstValue }}&deg;C
-        </v-col>
-        <v-col class="text-h5" cols="6" v-else> -&deg;C </v-col>
+        <v-col class="text-h2" cols="6"> {{ currentTemperature }}&deg;C </v-col>
         <v-col cols="12"> </v-col>
       </v-row>
     </v-card-text>
-    <v-crad-text> </v-crad-text>
 
     <v-list-item>
       <v-list-item-icon>
@@ -28,6 +24,7 @@
           style="color: gray"
         />
       </v-list-item-icon>
+
       <v-list-item-subtitle>{{ windSpeed }} m/s</v-list-item-subtitle>
     </v-list-item>
 
@@ -39,11 +36,11 @@
           style="color: gray"
         />
       </v-list-item-icon>
-      <v-list-item-subtitle v-if="hourPrecipitation === '강수없음'"
-        >강수없음</v-list-item-subtitle
+      <v-list-item-subtitle v-if="hourPrecipitation === 0"
+        >- &deg;mm</v-list-item-subtitle
       >
       <v-list-item-subtitle v-else
-        >{{ hourPrecipitation }} &deg;%</v-list-item-subtitle
+        >{{ hourPrecipitation }} &deg;mm</v-list-item-subtitle
       >
     </v-list-item>
     <v-list-item>
@@ -89,12 +86,14 @@
 
 <script>
 import DateComponent from "./common/DateComponent.vue";
+
 export default {
   components: { DateComponent },
   data() {
     return {
       labels: ["SU", "MO", "TU", "WED", "TH", "FR", "SA"],
       time: 0,
+      currentTemperature: "",
       getWeather: "",
       nowWeather: "",
       windSpeed: "",
@@ -127,29 +126,30 @@ export default {
       ],
     };
   },
+
   methods: {
     getWeatherdata() {
-      console.log("getWeatherdata");
+      // console.log("getWeatherdata");
       let getWeather = this.getWeather;
       let nowWeather = [];
       for (const elem in this.shortTermElement) {
-        console.log("elem = ", this.shortTermElement[elem]);
+        // console.log("elem = ", this.shortTermElement[elem]);
         const result = getWeather.findIndex(
           (element) => element.category === this.shortTermElement[elem]
         );
-
         nowWeather.push(getWeather[result]);
       }
+      // console.log("nowWeather", nowWeather);
       this.nowWeather = nowWeather;
-      this.hourPrecipitation = this.nowWeather[1].fcstValue;
-      this.humidityPersent = this.nowWeather[5].fcstValue;
-      this.windSpeed = this.nowWeather[9].fcstValue;
+      this.currentTemperature = this.nowWeather[0].obsrValue;
+      this.hourPrecipitation = this.nowWeather[1].obsrValue;
+      this.humidityPersent = this.nowWeather[5].obsrValue;
+      this.windSpeed = this.nowWeather[9].obsrValue;
     },
   },
-  mounted() {},
   computed: {
     checkWeather() {
-      return this.$store.state.weatherData;
+      return this.$store.state.nowWeatherData;
     },
   },
 

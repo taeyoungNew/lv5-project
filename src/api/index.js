@@ -3,10 +3,23 @@ import store from "@/store/index";
 // import { get } from "core-js/core/dict";
 // import { getMetadataKeys } from "core-js/fn/reflect";
 
-const weatherDatasKey =
-  "UkRbyOIUcZ8nSFUYHH4gbSjw2NPG0hjOkLMa8fUlkNpnstI7CbHORuOta%2BI8WusIGFq9AgdYa2vOaCeIYTi%2Bpw%3D%3D";
+let getTimeHours = "";
+let getTimeMinutes = "";
+// console.log(getTimeHours, getTimeMinutes);
+let getDate = "";
+// const baseTime = [02, 05, 08, 11, 14, 17, 20, 23];
+const fetchTimes = [
+  "0200",
+  "0500",
+  "0800",
+  "1100",
+  "1400",
+  "1700",
+  "2000",
+  "2300",
+];
 
-const findMetStationKey =
+const serviceKey =
   "UkRbyOIUcZ8nSFUYHH4gbSjw2NPG0hjOkLMa8fUlkNpnstI7CbHORuOta%2BI8WusIGFq9AgdYa2vOaCeIYTi%2Bpw%3D%3D";
 
 function createInstance() {
@@ -29,22 +42,92 @@ function fetchData(param) {
 
 function findMetStation() {
   return axios.get(
-    `http://apis.data.go.kr/B552584/MsrstnInfoInqireSvc/getNearbyMsrstnList?tmX=244148.546388&tmY=412423.75772&returnType=json&serviceKey=${findMetStationKey}`
+    `http://apis.data.go.kr/B552584/MsrstnInfoInqireSvc/getNearbyMsrstnList?tmX=244148.546388&tmY=412423.75772&returnType=json&serviceKey=${serviceKey}`
   );
 }
 // getShortTermForecast
 // fetchWeatherData
-function getShortTermForecast() {
+function getNowTerm() {
   return axios.get(
-    `/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst?serviceKey=${weatherDatasKey}&dataType=json&numOfRows=100&pageNo=1&base_date=20220714&base_time=1330&nx=${store.state.gridX}&ny=${store.state.gridY}`
+    // 초단기실황
+    `/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?serviceKey=${serviceKey}&dataType=json&numOfRows=10&pageNo=1&base_date=${getDate}&base_time=${
+      String(getTimeHours) + String(getTimeMinutes)
+    }&nx=${store.state.gridX}&ny=${store.state.gridY}`
   );
 }
 
-// function fetchWeather() {
-//   return axios.get(
-//     "http://www.kma.go.kr/weather/forecast/mid-term-rss3.jsp?stnId=108"
-//   );
-// }
+function getShortTerm() {
+  // console.log(String(getTimeHours) + String(getTimeMinutes));
+  return axios.get(
+    // 초단기예보
+    `/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst?serviceKey=${serviceKey}&dataType=json&numOfRows=100&pageNo=1&base_date=${getDate}&base_time=${
+      String(getTimeHours) + String(getTimeMinutes)
+    }&nx=${store.state.gridX}&ny=${store.state.gridY}`
+  );
+}
+
+function treeDaysWeather() {
+  // let getTimeHours = getTimeHours;
+  let mycurrentDate = new Date();
+  let getNow = mycurrentDate.getHours();
+  let dataNum = "";
+  let near = 0;
+  let abs = 0;
+  let min = 1000;
+  const target = [2, 5, 8, 11, 14, 17, 20, 23];
+  // getNow = ;
+  if (getNow < 10) {
+    getNow = "0" + String(getNow);
+  } else {
+    getNow = String(getNow);
+  }
+  console.log("getNow = ", String(getNow) + "00");
+  // fetchTimes.findIndex((x) => x === getTimeHours + "00");
+  if (fetchTimes.includes(getNow)) {
+    console.log("여기냐?");
+    return axios.get(
+      `/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${serviceKey}&dataType=json&numOfRows=1000&pageNo=1&base_date=${getDate}&base_time=${getNow}&nx=${store.state.gridX}&ny=${store.state.gridY}`
+    );
+  } else {
+    getNow = mycurrentDate.getHours();
+    // console.log(0 < 0);
+    for (let i = 0; i < fetchTimes.length; i++) {
+      abs =
+        target[i] - Number(getNow) < 0
+          ? -(target[i] - Number(getNow))
+          : target[i] - Number(getNow);
+      if (abs < min) {
+        min = abs;
+        near = target[i];
+        // console.log(i, "min", min);
+        // console.log(i, "near", near);
+        if (getNow === 0 || getNow === 1) {
+          let date = Number(getDate) - 1;
+          return axios.get(
+            `/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${serviceKey}&dataType=json&numOfRows=1000&pageNo=1&base_date=${date}&base_time=${"2300"}&nx=${
+              store.state.gridX
+            }&ny=${store.state.gridY}`
+          );
+        }
+        if (getNow < near && getNow !== 0) {
+          return axios.get(
+            `/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${serviceKey}&dataType=json&numOfRows=1000&pageNo=1&base_date=${getDate}&base_time=${
+              "0" + String(near - 3) + "00"
+            }&nx=${store.state.gridX}&ny=${store.state.gridY}`
+          );
+        }
+        // console.log("near = ", String(near));
+        return axios.get(
+          `/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${serviceKey}&dataType=json&numOfRows=1000&pageNo=1&base_date=${getDate}&base_time=${
+            "0" + String(near) + "00"
+          }&nx=${store.state.gridX}&ny=${store.state.gridY}`
+        );
+      }
+    }
+    // console.log("aaa");
+  }
+  console.log(dataNum);
+}
 
 function getGridXY(getLat, getLng) {
   // console.log("getGridXY= ", getLat, getLng);
@@ -92,7 +175,6 @@ function getGridXY(getLat, getLng) {
     gridX: rs["x"],
     gridY: rs["y"],
   };
-
   store.dispatch("GET_GRIDS", grids);
 }
 
@@ -114,36 +196,92 @@ function getCoordinate() {
   // console.log("getCoordinate = ", serachAddress);
 }
 
-// function getTimeNow() {
-//   let mycurrentDate = new Date();
-//   let hours = mycurrentDate.getHours();
-//   let minutes = mycurrentDate.getMinutes();
-//   let seconds = mycurrentDate.getSeconds();
-//   let date =
-//     this.sysPaddingZro(mycurrentDate.getFullYear(), 4) +
-//     "-" +
-//     this.sysPaddingZro(mycurrentDate.getMonth() + 1, 2) +
-//     "-" +
-//     this.sysPaddingZro(mycurrentDate.getDate(), 2) +
-//     " " +
-//     this.customDate[mycurrentDate.getDay()];
+function getTimeNow() {
+  let mycurrentDate = new Date();
+  let date =
+    sysPaddingZro(mycurrentDate.getFullYear(), 4) +
+    "0" +
+    +sysPaddingZro(mycurrentDate.getMonth() + 1, 2) +
+    +sysPaddingZro(mycurrentDate.getDate(), 2);
+  let hours = "";
+  if (mycurrentDate.getHours() < 10) {
+    hours = "0" + mycurrentDate.getHours();
+  } else {
+    hours = mycurrentDate.getHours();
+  }
 
-//   const nowTime = {
-//     hours: hours,
-//     minutes: minutes,
-//     seconds: seconds,
-//     date: date,
-//   };
+  let minutes = mycurrentDate.getMinutes();
+  if (mycurrentDate.getMinutes() < 10) {
+    minutes = "0" + mycurrentDate.getMinutes();
+  } else {
+    minutes = mycurrentDate.getMinutes();
+  }
 
-//   return nowTime;
-// }
+  const nowTime = {
+    date: date,
+    hours: hours,
+    minutes: minutes,
+  };
+  // console.log(getDate);
+  // console.log(String(hours) + String(minutes));
+  getTimeHours = nowTime.hours;
+  getTimeMinutes = nowTime.minutes;
+
+  if (
+    String(getTimeHours) + String(getTimeMinutes) >=
+    String(getTimeHours) + "30"
+  ) {
+    if (getTimeHours < "10") {
+      // console.log("30분 갱신후");
+      getTimeHours = nowTime.hours;
+      getTimeMinutes = nowTime.minutes;
+    } else {
+      // console.log("30분 갱신후");
+      getTimeHours = nowTime.hours;
+      getTimeMinutes = "30";
+      // console.log("30분 갱신후");
+    }
+
+    // console.log("30분에 갱신");
+  } else {
+    if (getTimeHours < 10) {
+      // console.log("30분 갱신전");
+      getTimeHours = "0" + String(mycurrentDate.getHours() - 1);
+      getTimeMinutes = "50";
+      // console.log(String(getTimeHours), String(getTimeMinutes));
+      // console.log(String(getTimeHours) + String(getTimeMinutes));
+    } else {
+      // console.log("30분 갱신전");
+      getTimeHours = "0" + String(mycurrentDate.getHours() - 1);
+      getTimeMinutes = "30";
+      // console.log(String(getTimeHours) + String(getTimeMinutes));
+    }
+  }
+
+  function sysPaddingZro(lnum, mydpt) {
+    let clckzro = "";
+    for (let i = 0; i < mydpt; i++) {
+      clckzro += "0";
+    }
+    return (clckzro + lnum).slice(-mydpt);
+  }
+
+  getDate = date;
+  return nowTime;
+}
+
+setInterval(() => {
+  getTimeNow();
+}, 1000);
 
 export const instance = createInstance();
 export {
   getCoordinate,
   getGridXY,
   fetchData,
-  getShortTermForecast,
-  // getTimeNow,
   findMetStation,
+  getTimeNow,
+  getNowTerm,
+  getShortTerm,
+  treeDaysWeather,
 };
