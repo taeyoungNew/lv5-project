@@ -5,6 +5,7 @@ import {
   getNowTerm,
   getShortTerm,
   treeDaysWeather,
+  getTimeNow,
 } from "@/api/index";
 
 Vue.use(Vuex);
@@ -14,15 +15,18 @@ export default new Vuex.Store({
   state: {
     defaultSerch: "전국",
     airDatas: [],
+    findAreaData: "",
     nowWeatherData: "",
     shortTermData: "",
     threeDaysTem: "",
-    findAreaData: "",
-    serviceKey: "",
+    presentTime: "",
     gridX: "",
     gridY: "",
   },
   mutations: {
+    SAVE_PRE_TIME(state, param) {
+      state.presentTime = param;
+    },
     SAVE_DATAS(state, param) {
       state.airDatas = param;
     },
@@ -44,6 +48,10 @@ export default new Vuex.Store({
     },
   },
   actions: {
+    getPreTime(context) {
+      let preTime = getTimeNow();
+      context.commit("SAVE_PRE_TIME", preTime);
+    },
     FETCH_DATAS(context) {
       fetchData()
         .then(function (res) {
@@ -60,11 +68,10 @@ export default new Vuex.Store({
     },
 
     GET_GRIDS(context, gridXY) {
-      console.log("gridXY= ", gridXY["gridX"], gridXY["gridY"]);
+      // console.log("gridXY= ", gridXY["gridX"], gridXY["gridY"]);
       context.commit("SAVE_GRIDS", gridXY);
       getNowTerm()
         .then(function (res) {
-          // console.log(res);
           context.commit(
             "SAVE_NOW_WEATHER_DATAS",
             res.data.response.body.items.item
@@ -76,7 +83,10 @@ export default new Vuex.Store({
 
       getShortTerm()
         .then(function (res) {
-          console.log(res);
+          context.commit(
+            "SAVE_SHORT_WEATER_DATAS",
+            res.data.response.body.items.item
+          );
         })
         .catch(function (error) {
           console.log(error);
@@ -84,7 +94,6 @@ export default new Vuex.Store({
 
       treeDaysWeather()
         .then(function (res) {
-          // console.log("treeDaysWeather", res.data.response.body.items.item);
           context.commit(
             "SAVE_TREEDAYS_DATAS",
             res.data.response.body.items.item

@@ -1,6 +1,14 @@
 <template>
   <v-container>
     <v-data-table
+      v-if="loadingStatus"
+      item-key="name"
+      class="elevation-1"
+      loading
+      loading-text="Loading... Please wait"
+    ></v-data-table>
+    <v-data-table
+      v-else
       :headers="headers"
       :items="desserts"
       :items-per-page="15"
@@ -17,20 +25,6 @@ export default {
     getWeather: "",
     skyStatus: "",
     currentTemperature: "",
-    PCP: "",
-    POP: "",
-    PTY: "",
-    REH: "",
-    SKY: "",
-    SNO: "",
-    TMN: "",
-    TMP: "",
-    TMX: "",
-    UUU: "",
-    VEC: "",
-    VVV: "",
-    WAV: "",
-    WSD: "",
     headers: [
       {
         text: "시간",
@@ -43,15 +37,21 @@ export default {
       { text: "강수량 °mm", value: "PCP" },
       { text: "습도 %", value: "REH" },
       { text: "풍속 m/s", value: "WSD" },
+      // { text: "아이콘", value: "icon" },
     ],
     dateData: "",
     desserts: [],
     time: "",
     num: 0,
     saveData: {},
+    loadingStatus: false,
   }),
   methods: {
+    isLoading() {
+      this.loadingStatus = !this.loadingStatus;
+    },
     async getWeatherData() {
+      this.isLoading();
       this.desserts = [];
       let getWeather = this.getWeather;
       this.dateData = getTimeNow();
@@ -62,29 +62,45 @@ export default {
       for (let num = 0; num < 24; num++) {
         await this.getProperty(num, getWeather);
       }
+      this.isLoading();
     },
 
-    getProperty(num, getWeather, num2) {
+    getProperty(num, getWeather) {
       let saveData = {};
       let category = "";
       let fcstValue = "";
-      console.log("num2", num2);
-      // let index = 0;
+
       for (let i = 0; i < getWeather.length; i++) {
-        console.log(Number(this.dateData.date));
         if (this.dateData.date === getWeather[i].fcstDate) {
-          // console.log(Number(this.dateData.date) + num2);
-          if ("0" + (Number(this.time) + "00") === getWeather[i].fcstTime) {
-            console.log(getWeather[i].category, getWeather[i].fcstValue);
+          if (
+            "0" + (Number(this.time) + num + "00") ===
+            getWeather[i].fcstTime
+          ) {
+            // console.log("0" + (Number(this.time) + num + "00"));
             category = getWeather[i].category;
             fcstValue = getWeather[i].fcstValue;
-            saveData[`${category}`] = fcstValue;
-            console.log(saveData);
-            console.log(Object.keys(saveData).length);
+
+            if (category === "TMP") {
+              saveData[`${category}`] = fcstValue + "°C";
+            } else if (category === "REH") {
+              saveData[`${category}`] = fcstValue + "%";
+            } else if (category === "WSD") {
+              saveData[`${category}`] = fcstValue + "m/s";
+            } else if (category === "SKY") {
+              if (fcstValue === 1 || fcstValue === 2) {
+                saveData[`${category}`] = "맑음";
+              } else if (fcstValue === 3) {
+                saveData[`${category}`] = "구름 많음";
+              } else {
+                saveData[`${category}`] = "흐림";
+              }
+            } else {
+              saveData[`${category}`] = fcstValue;
+            }
+
             if (Object.keys(saveData).length > 11) {
-              console.log("길이가 꽉참");
-              console.log(saveData);
-              saveData["fcstTime"] = getWeather[i].fcstTime;
+              saveData["fcstTime"] =
+                getWeather[i].fcstTime.substring(0, 2) + "시";
               this.desserts.push(saveData);
               break;
             }
@@ -92,14 +108,29 @@ export default {
             Number(this.time) + num + "00" ===
             getWeather[i].fcstTime
           ) {
+            // console.log("time", Number(this.time) + num + "00");
             category = getWeather[i].category;
             fcstValue = getWeather[i].fcstValue;
-            saveData[`${category}`] = fcstValue;
-            console.log(saveData);
-            console.log(Object.keys(saveData).length);
+
+            if (category === "TMP") {
+              saveData[`${category}`] = fcstValue + "°C";
+            } else if (category === "REH") {
+              saveData[`${category}`] = fcstValue + "%";
+            } else if (category === "WSD") {
+              saveData[`${category}`] = fcstValue + "m/s";
+            } else if (category === "SKY") {
+              if (fcstValue === 1 || fcstValue === 2) {
+                saveData[`${category}`] = "맑음";
+              } else if (fcstValue === 3) {
+                saveData[`${category}`] = "구름 많음";
+              } else {
+                saveData[`${category}`] = "흐림";
+              }
+            } else {
+              saveData[`${category}`] = fcstValue;
+            }
+
             if (Object.keys(saveData).length > 11) {
-              console.log("길이가 꽉참");
-              console.log(saveData);
               saveData["fcstTime"] =
                 getWeather[i].fcstTime.substring(0, 2) + "시";
               this.desserts.push(saveData);
@@ -107,7 +138,6 @@ export default {
             }
           }
         }
-        // if(this.dateData.date + num2 === )
       }
     },
   },
@@ -120,9 +150,8 @@ export default {
   watch: {
     async checkWeather(val) {
       this.getWeather = val;
-      // console.log(this.getWeather);
-      // this.fetchDate();
-      await this.getWeatherData();
+
+      this.getWeatherData();
     },
   },
 };

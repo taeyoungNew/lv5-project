@@ -21,6 +21,7 @@ const fetchTimes = [
 
 const serviceKey =
   "UkRbyOIUcZ8nSFUYHH4gbSjw2NPG0hjOkLMa8fUlkNpnstI7CbHORuOta%2BI8WusIGFq9AgdYa2vOaCeIYTi%2Bpw%3D%3D";
+const restApiKey = "db3b40e1abc54e54f8831b2258beeba4";
 
 function createInstance() {
   return axios.create({
@@ -57,9 +58,7 @@ function getNowTerm() {
 }
 
 function getShortTerm() {
-  // console.log(String(getTimeHours) + String(getTimeMinutes));
   return axios.get(
-    // 초단기예보
     `/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst?serviceKey=${serviceKey}&dataType=json&numOfRows=100&pageNo=1&base_date=${getDate}&base_time=${
       String(getTimeHours) + String(getTimeMinutes)
     }&nx=${store.state.gridX}&ny=${store.state.gridY}`
@@ -81,16 +80,14 @@ function treeDaysWeather() {
   } else {
     getNow = String(getNow);
   }
-  console.log("getNow = ", String(getNow) + "00");
-  // fetchTimes.findIndex((x) => x === getTimeHours + "00");
+
   if (fetchTimes.includes(getNow)) {
-    console.log("여기냐?");
     return axios.get(
       `/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${serviceKey}&dataType=json&numOfRows=1000&pageNo=1&base_date=${getDate}&base_time=${getNow}&nx=${store.state.gridX}&ny=${store.state.gridY}`
     );
   } else {
     getNow = mycurrentDate.getHours();
-    // console.log(0 < 0);
+
     for (let i = 0; i < fetchTimes.length; i++) {
       abs =
         target[i] - Number(getNow) < 0
@@ -99,8 +96,7 @@ function treeDaysWeather() {
       if (abs < min) {
         min = abs;
         near = target[i];
-        // console.log(i, "min", min);
-        // console.log(i, "near", near);
+
         if (getNow === 0 || getNow === 1) {
           let date = Number(getDate) - 1;
           return axios.get(
@@ -116,7 +112,7 @@ function treeDaysWeather() {
             }&nx=${store.state.gridX}&ny=${store.state.gridY}`
           );
         }
-        // console.log("near = ", String(near));
+
         return axios.get(
           `/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${serviceKey}&dataType=json&numOfRows=1000&pageNo=1&base_date=${getDate}&base_time=${
             "0" + String(near) + "00"
@@ -124,13 +120,13 @@ function treeDaysWeather() {
         );
       }
     }
-    // console.log("aaa");
   }
   console.log(dataNum);
 }
 
 function getGridXY(getLat, getLng) {
   // console.log("getGridXY= ", getLat, getLng);
+  changeTmCoord(getLat, getLng);
   let RE = 6371.00877; // 지구 반경(km)
   let GRID = 5.0; // 격자 간격(km)
   let SLAT1 = 30.0; // 투영 위도1(degree)
@@ -178,10 +174,34 @@ function getGridXY(getLat, getLng) {
   store.dispatch("GET_GRIDS", grids);
 }
 
-function getCoordinate() {
+function changeTmCoord(y, x) {
+  console.log("y", y, "x", x);
+  axios
+    .get(
+      `https://dapi.kakao.com/v2/local/geo/transcoord.json?x=${x}&y=${y}&input_coord=WGS84&output_coord=TM`,
+      {
+        headers: {
+          Authorization: `KakaoAK ${restApiKey}`,
+        },
+      }
+    )
+    .then(function (res) {
+      findMeasuring(res.data.documents[0]);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+}
+
+function findMeasuring(params) {
+  console.log(params);
+}
+
+function getCoordinate(params) {
   /* global kakao */
   const geocoder = new kakao.maps.services.Geocoder();
-  const serachAddress = store.state.findAreaData.sidoStation;
+  const serachAddress = params;
+  // const serachAddress = store.state.findAreaData.sidoStation;
 
   geocoder.addressSearch(serachAddress, function (result, status) {
     if (status === kakao.maps.services.Status.OK) {
@@ -190,10 +210,9 @@ function getCoordinate() {
       // console.log("검색한 주소의 좌표 = ", coords);
       getGridXY(coords.Ma, coords.La);
     } else {
-      console.log("못찾았어요ㅜ ");
+      alert("못찾았어요ㅜ ");
     }
   });
-  // console.log("getCoordinate = ", serachAddress);
 }
 
 function getTimeNow() {
@@ -217,13 +236,15 @@ function getTimeNow() {
     minutes = mycurrentDate.getMinutes();
   }
 
+  let day = mycurrentDate.getDay();
+
   const nowTime = {
     date: date,
+    day: day,
     hours: hours,
     minutes: minutes,
   };
-  // console.log(getDate);
-  // console.log(String(hours) + String(minutes));
+
   getTimeHours = nowTime.hours;
   getTimeMinutes = nowTime.minutes;
 
@@ -232,51 +253,42 @@ function getTimeNow() {
     String(getTimeHours) + "30"
   ) {
     if (getTimeHours < "10") {
-      // console.log("30분 갱신후");
       getTimeHours = nowTime.hours;
       getTimeMinutes = nowTime.minutes;
     } else {
-      // console.log("30분 갱신후");
       getTimeHours = nowTime.hours;
       getTimeMinutes = "30";
-      // console.log("30분 갱신후");
     }
-
-    // console.log("30분에 갱신");
   } else {
     if (getTimeHours < 10) {
-      // console.log("30분 갱신전");
       getTimeHours = "0" + String(mycurrentDate.getHours() - 1);
       getTimeMinutes = "50";
-      // console.log(String(getTimeHours), String(getTimeMinutes));
-      // console.log(String(getTimeHours) + String(getTimeMinutes));
     } else {
-      // console.log("30분 갱신전");
       getTimeHours = "0" + String(mycurrentDate.getHours() - 1);
       getTimeMinutes = "30";
-      // console.log(String(getTimeHours) + String(getTimeMinutes));
     }
-  }
-
-  function sysPaddingZro(lnum, mydpt) {
-    let clckzro = "";
-    for (let i = 0; i < mydpt; i++) {
-      clckzro += "0";
-    }
-    return (clckzro + lnum).slice(-mydpt);
   }
 
   getDate = date;
   return nowTime;
 }
 
+function sysPaddingZro(lnum, mydpt) {
+  let clckzro = "";
+  for (let i = 0; i < mydpt; i++) {
+    clckzro += "0";
+  }
+  return (clckzro + lnum).slice(-mydpt);
+}
 setInterval(() => {
   getTimeNow();
 }, 1000);
 
 export const instance = createInstance();
 export {
+  findMeasuring,
   getCoordinate,
+  changeTmCoord,
   getGridXY,
   fetchData,
   findMetStation,

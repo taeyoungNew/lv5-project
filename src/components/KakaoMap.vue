@@ -81,19 +81,11 @@ export default {
       kakao.maps.event.addListener(map, "click", function (mouseEvent) {
         // 클릭한 위도, 경도 정보를 가져옵니다
         var latlng = mouseEvent.latLng;
-        // getGridXY(latlng.getLat(), latlng.getLng());
+
         const gridX = latlng.getLat();
         const gridY = latlng.getLng();
         getGridXY(gridX, gridY);
-        // console.log(gridX, gridY);
-
-        // const payLoad = {
-        //   gridX: gridX,
-        //   gridY: gridY,
-        // };
-        // this.$store.dispatch("GET_GRIDS", payLoad);
       });
-      // let mapType = kakao.maps.MapTypeId.USE_DESTRICT;
 
       positions.forEach(function (pos) {
         let marker = new kakao.maps.Marker({
