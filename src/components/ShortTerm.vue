@@ -87,11 +87,13 @@ export default {
             } else if (category === "WSD") {
               saveData[`${category}`] = fcstValue + "m/s";
             } else if (category === "SKY") {
-              if (fcstValue === 1 || fcstValue === 2) {
+              if (fcstValue == 1) {
                 saveData[`${category}`] = "맑음";
-              } else if (fcstValue === 3) {
+              } else if (fcstValue == 2) {
+                saveData[`${category}`] = "맑음";
+              } else if (fcstValue == 3) {
                 saveData[`${category}`] = "구름 많음";
-              } else {
+              } else if (fcstValue == 4) {
                 saveData[`${category}`] = "흐림";
               }
             } else {
