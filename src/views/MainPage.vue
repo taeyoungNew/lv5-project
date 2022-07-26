@@ -5,7 +5,7 @@
       <v-container class="grey lighten-3">
         <v-row style="position: relative">
           <v-col>
-            <v-card style="width: 120%" outlined>
+            <v-card outlined>
               <kakao-map />
             </v-card>
           </v-col>
@@ -18,6 +18,13 @@
         </v-row>
       </v-container>
     </v-card>
+    <v-card outlined>
+      <v-container>
+        <v-card class="pa-0" outlined>
+          <short-term />
+        </v-card>
+      </v-container>
+    </v-card>
   </v-container>
 </template>
 
@@ -26,9 +33,11 @@ import KakaoMap from "@/components/KakaoMap.vue";
 import AirInpo from "@/components/AirInpo.vue";
 import SearchRegion from "@/components/SearchRegion.vue";
 import ShowWeather from "@/components/ShowWeather.vue";
+import ShortTerm from "@/components/ShortTerm.vue";
+// import ShortTerm from "@/components/ShortTerm.vue";
 
 export default {
-  components: { KakaoMap, AirInpo, SearchRegion, ShowWeather },
+  components: { KakaoMap, AirInpo, SearchRegion, ShowWeather, ShortTerm },
   created() {
     this.fetchData();
   },

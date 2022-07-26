@@ -1,6 +1,12 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import { fetchData, getShortTermForecast } from "@/api/index";
+import {
+  fetchData,
+  getNowTerm,
+  getShortTerm,
+  treeDaysWeather,
+  getTimeNow,
+} from "@/api/index";
 
 Vue.use(Vuex);
 Vue.config.devtools = true;
@@ -9,13 +15,18 @@ export default new Vuex.Store({
   state: {
     defaultSerch: "전국",
     airDatas: [],
-    weatherData: "",
     findAreaData: "",
-    serviceKey: "",
+    nowWeatherData: "",
+    shortTermData: "",
+    threeDaysTem: "",
+    presentTime: "",
     gridX: "",
     gridY: "",
   },
   mutations: {
+    SAVE_PRE_TIME(state, param) {
+      state.presentTime = param;
+    },
     SAVE_DATAS(state, param) {
       state.airDatas = param;
     },
@@ -26,11 +37,21 @@ export default new Vuex.Store({
       state.gridX = gridXY["gridX"];
       state.gridY = gridXY["gridY"];
     },
-    SAVE_WEATHER_DATAS(state, params) {
-      state.weatherData = params;
+    SAVE_NOW_WEATHER_DATAS(state, params) {
+      state.nowWeatherData = params;
+    },
+    SAVE_SHORT_WEATER_DATAS(state, params) {
+      state.shortTermData = params;
+    },
+    SAVE_TREEDAYS_DATAS(state, params) {
+      state.threeDaysTem = params;
     },
   },
   actions: {
+    getPreTime(context) {
+      let preTime = getTimeNow();
+      context.commit("SAVE_PRE_TIME", preTime);
+    },
     FETCH_DATAS(context) {
       fetchData()
         .then(function (res) {
@@ -47,13 +68,34 @@ export default new Vuex.Store({
     },
 
     GET_GRIDS(context, gridXY) {
-      console.log("gridXY= ", gridXY["gridX"], gridXY["gridY"]);
+      // console.log("gridXY= ", gridXY["gridX"], gridXY["gridY"]);
       context.commit("SAVE_GRIDS", gridXY);
-      getShortTermForecast()
+      getNowTerm()
         .then(function (res) {
-          console.log(res);
           context.commit(
-            "SAVE_WEATHER_DATAS",
+            "SAVE_NOW_WEATHER_DATAS",
+            res.data.response.body.items.item
+          );
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+
+      getShortTerm()
+        .then(function (res) {
+          context.commit(
+            "SAVE_SHORT_WEATER_DATAS",
+            res.data.response.body.items.item
+          );
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+
+      treeDaysWeather()
+        .then(function (res) {
+          context.commit(
+            "SAVE_TREEDAYS_DATAS",
             res.data.response.body.items.item
           );
         })

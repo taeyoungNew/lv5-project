@@ -68,7 +68,7 @@
 export default {
   data() {
     return {
-      airDustData: this.$store.state.findAreaData,
+      airDustData: null,
       sidoName: "",
       stationName: "",
       message: "",
@@ -108,7 +108,7 @@ export default {
     //   }
     // },
     detailsInfo(params) {
-      // console.log("검색한 미세먼지: ", params);
+      console.log("검색한 미세먼지: ", params);
 
       if (params !== "" || null) {
         this.detailDatas = [
@@ -138,12 +138,13 @@ export default {
   },
   computed: {
     checkAirData() {
+      console.log("val", this.$store.state.findAreaData);
       return this.$store.state.findAreaData;
     },
   },
   watch: {
     checkAirData(val) {
-      // console.log("watch checkAirData 호출 = ", val);
+      this.airDustData = val;
       this.detailsInfo(val);
     },
   },

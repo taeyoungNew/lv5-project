@@ -7,6 +7,7 @@ import "material-design-icons-iconfont/dist/material-design-icons.css";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faSun,
+  faCloudSun,
   faCloud,
   faCloudBolt,
   faCloudRain,
@@ -38,6 +39,7 @@ library.add(
   faFaceLaughBeam,
   faFaceMeh,
   faSun,
+  faCloudSun,
   faCloud,
   faCloudBolt,
   faCloudRain,
