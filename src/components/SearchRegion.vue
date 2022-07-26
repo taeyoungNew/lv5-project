@@ -91,8 +91,6 @@ export default {
         console.log(places[i]);
         this.getAddress.push(places[i]);
       }
-      // const set = new Set(this.getAddress);
-      // this.getAddress = [...set];
     },
     selectArea(stationName) {
       this.getAddress = [];

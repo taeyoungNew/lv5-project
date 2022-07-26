@@ -79,34 +79,6 @@ export default {
     };
   },
   methods: {
-    // showInfo() {
-    //   this.gradeValue = this.airDustData.khaiGrade;
-    //   console.log("airDustData = ", this.airDustData);
-    //   this.sidoName = this.airDustData.sidoName;
-    //   this.stationName = this.airDustData.stationName;
-    //   switch (this.gradeValue) {
-    //     case "1":
-    //       this.message = "아주 좋음";
-    //       break;
-    //     case "2":
-    //       this.message = "좋음";
-    //       break;
-    //     case "3":
-    //       this.message = "보통";
-    //       break;
-    //     case "4":
-    //       this.message = "나쁨";
-    //       break;
-    //     case "5":
-    //       this.message = "아주 나쁨";
-    //       break;
-    //     case null:
-    //       this.message = "자료 이상";
-    //       break;
-    //     default:
-    //       break;
-    //   }
-    // },
     detailsInfo(params) {
       console.log("검색한 미세먼지: ", params);
 

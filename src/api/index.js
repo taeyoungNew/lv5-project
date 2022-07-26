@@ -22,6 +22,8 @@ const fetchTimes = [
 const serviceKey =
   "UkRbyOIUcZ8nSFUYHH4gbSjw2NPG0hjOkLMa8fUlkNpnstI7CbHORuOta%2BI8WusIGFq9AgdYa2vOaCeIYTi%2Bpw%3D%3D";
 const restApiKey = "db3b40e1abc54e54f8831b2258beeba4";
+const tmServiceKey =
+  "UkRbyOIUcZ8nSFUYHH4gbSjw2NPG0hjOkLMa8fUlkNpnstI7CbHORuOta%2BI8WusIGFq9AgdYa2vOaCeIYTi%2Bpw%3D%3D";
 
 function createInstance() {
   return axios.create({
@@ -124,9 +126,9 @@ function treeDaysWeather() {
   console.log(dataNum);
 }
 
-function getGridXY(getLat, getLng) {
+function getGridXY(getLng, getLat) {
   // console.log("getGridXY= ", getLat, getLng);
-  changeTmCoord(getLat, getLng);
+  changeTmCoord(getLng, getLat);
   let RE = 6371.00877; // 지구 반경(km)
   let GRID = 5.0; // 격자 간격(km)
   let SLAT1 = 30.0; // 투영 위도1(degree)
@@ -154,8 +156,8 @@ function getGridXY(getLat, getLng) {
   ro = (re * sf) / Math.pow(ro, sn);
   let rs = {};
 
-  rs["lat"] = getLat;
   rs["lng"] = getLng;
+  rs["lat"] = getLat;
   var ra = Math.tan(Math.PI * 0.25 + getLat * DEGRAD * 0.5);
   ra = (re * sf) / Math.pow(ra, sn);
   var theta = getLng * DEGRAD - olon;
@@ -174,8 +176,8 @@ function getGridXY(getLat, getLng) {
   store.dispatch("GET_GRIDS", grids);
 }
 
-function changeTmCoord(y, x) {
-  console.log("y", y, "x", x);
+function changeTmCoord(x, y) {
+  console.log("x", x, "y", y);
   axios
     .get(
       `https://dapi.kakao.com/v2/local/geo/transcoord.json?x=${x}&y=${y}&input_coord=WGS84&output_coord=TM`,
@@ -193,8 +195,39 @@ function changeTmCoord(y, x) {
     });
 }
 
-function findMeasuring(params) {
-  console.log(params);
+async function findMeasuring(getTmXY) {
+  let airDatas = store.state.airDatas;
+  let measuringDatas = [];
+  let tmDatas = [];
+  let measuringData = "";
+  await axios
+    .get(
+      `/B552584/MsrstnInfoInqireSvc/getNearbyMsrstnList?tmX=${getTmXY.x}&tmY=${getTmXY.y}&returnType=json&serviceKey=${tmServiceKey}`
+    )
+    .then(function (res) {
+      console.log(res.data.response.body.items);
+      measuringDatas = res.data.response.body.items;
+    })
+    .catch(function (res) {
+      console.log(res);
+    });
+
+  console.log("measuringDatas = ", measuringDatas);
+
+  for (let i = 0; i < measuringDatas.length; i++) {
+    measuringDatas[i].tm;
+    tmDatas.push(measuringDatas[i].tm);
+    if (measuringDatas[i].tm === Math.min(...tmDatas)) {
+      measuringData = measuringDatas[i];
+      console.log("measuringData = ", measuringData.stationName);
+    }
+  }
+
+  let airData = airDatas.find(
+    (x) => x.stationName === measuringData.stationName
+  );
+  console.log(airData);
+  store.state.findAreaData = airData;
 }
 
 function getCoordinate(params) {
@@ -208,7 +241,7 @@ function getCoordinate(params) {
       const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
 
       // console.log("검색한 주소의 좌표 = ", coords);
-      getGridXY(coords.Ma, coords.La);
+      getGridXY(coords.La, coords.Ma);
     } else {
       alert("못찾았어요ㅜ ");
     }
