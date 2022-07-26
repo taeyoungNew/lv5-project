@@ -1,30 +1,28 @@
 <template>
   <v-app id="app">
-    <app-header class="app-header" />
+    <app-header />
     <v-main>
-      <router-view />
+      <v-container>
+        <router-view />
+      </v-container>
     </v-main>
   </v-app>
 </template>
 
 <script>
 import AppHeader from "./components/common/AppHeader.vue";
+
+// import AppHeader from "./components/common/AppHeader.vue";
 export default {
   name: "App",
-  components: {
-    AppHeader,
-  },
+  components: { AppHeader },
   data: () => ({}),
 };
 </script>
 <style scoped>
 #app {
-  width: 1280px;
+  width: 100%;
   margin: 0 auto;
-  background-color: #00b4d8;
-  height: 100vw;
-}
-.app-header {
-  margin-top: 40px;
+  height: auto;
 }
 </style>

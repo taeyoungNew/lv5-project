@@ -1,5 +1,13 @@
 import axios from "axios";
 import store from "@/store/index";
+// import { get } from "core-js/core/dict";
+// import { getMetadataKeys } from "core-js/fn/reflect";
+
+const weatherDatasKey =
+  "UkRbyOIUcZ8nSFUYHH4gbSjw2NPG0hjOkLMa8fUlkNpnstI7CbHORuOta%2BI8WusIGFq9AgdYa2vOaCeIYTi%2Bpw%3D%3D";
+
+const findMetStationKey =
+  "UkRbyOIUcZ8nSFUYHH4gbSjw2NPG0hjOkLMa8fUlkNpnstI7CbHORuOta%2BI8WusIGFq9AgdYa2vOaCeIYTi%2Bpw%3D%3D";
 
 function createInstance() {
   return axios.create({
@@ -18,59 +26,124 @@ function fetchData(param) {
     );
   }
 }
-function fetchWeatherData() {
+
+function findMetStation() {
   return axios.get(
-    "/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?serviceKey=UkRbyOIUcZ8nSFUYHH4gbSjw2NPG0hjOkLMa8fUlkNpnstI7CbHORuOta%2BI8WusIGFq9AgdYa2vOaCeIYTi%2Bpw%3D%3D&numOfRows=100&dataType=json&pageNo=2&base_date=20220624&base_time=0300&nx=61&ny=128"
+    `http://apis.data.go.kr/B552584/MsrstnInfoInqireSvc/getNearbyMsrstnList?tmX=244148.546388&tmY=412423.75772&returnType=json&serviceKey=${findMetStationKey}`
   );
-  // var xhr = new XMLHttpRequest();
-  // var url = "/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst"; /*URL*/
-  // var queryParams =
-  //   "?" +
-  //   encodeURIComponent("serviceKey") +
-  //   "=" +
-  //   "UkRbyOIUcZ8nSFUYHH4gbSjw2NPG0hjOkLMa8fUlkNpnstI7CbHORuOta%2BI8WusIGFq9AgdYa2vOaCeIYTi%2Bpw%3D%3D"; /*Service Key*/
-  // queryParams +=
-  //   "&" + encodeURIComponent("pageNo") + "=" + encodeURIComponent("1"); /**/
-  // queryParams +=
-  //   "&" +
-  //   encodeURIComponent("numOfRows") +
-  //   "=" +
-  //   encodeURIComponent("1000"); /**/
-  // queryParams +=
-  //   "&" +
-  //   encodeURIComponent("dataType") +
-  //   "=" +
-  //   encodeURIComponent("json"); /**/
-  // queryParams +=
-  //   "&" +
-  //   encodeURIComponent("base_date") +
-  //   "=" +
-  //   encodeURIComponent("20210624"); /**/
-  // queryParams +=
-  //   "&" +
-  //   encodeURIComponent("base_time") +
-  //   "=" +
-  //   encodeURIComponent("0000"); /**/
-  // queryParams +=
-  //   "&" + encodeURIComponent("nx") + "=" + encodeURIComponent("55"); /**/
-  // queryParams +=
-  //   "&" + encodeURIComponent("ny") + "=" + encodeURIComponent("127"); /**/
-  // xhr.open("GET", url + queryParams);
-  // console.log(this.readyState);
-  // xhr.onreadystatechange = function () {
-  //   if (this.readyState == 4) {
-  //     alert(
-  //       "Status: " +
-  //         this.status +
-  //         "nHeaders: " +
-  //         JSON.stringify(this.getAllResponseHeaders()) +
-  //         "nBody: " +
-  //         this.responseText
-  //     );
-  //   }
-  // };
-  // xhr.send();
+}
+// getShortTermForecast
+// fetchWeatherData
+function getShortTermForecast() {
+  return axios.get(
+    `/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst?serviceKey=${weatherDatasKey}&dataType=json&numOfRows=100&pageNo=1&base_date=20220714&base_time=1330&nx=${store.state.gridX}&ny=${store.state.gridY}`
+  );
 }
 
+// function fetchWeather() {
+//   return axios.get(
+//     "http://www.kma.go.kr/weather/forecast/mid-term-rss3.jsp?stnId=108"
+//   );
+// }
+
+function getGridXY(getLat, getLng) {
+  // console.log("getGridXY= ", getLat, getLng);
+  let RE = 6371.00877; // 지구 반경(km)
+  let GRID = 5.0; // 격자 간격(km)
+  let SLAT1 = 30.0; // 투영 위도1(degree)
+  let SLAT2 = 60.0; // 투영 위도2(degree)
+  let OLON = 126.0; // 기준점 경도(degree)
+  let OLAT = 38.0; // 기준점 위도(degree)
+  let XO = 43; // 기준점 X좌표(GRID)
+  let YO = 136; // 기1준점 Y좌표(GRID)
+
+  let DEGRAD = Math.PI / 180.0;
+  // let RADDEG = 180.0 / Math.PI;
+
+  let re = RE / GRID;
+  let slat1 = SLAT1 * DEGRAD;
+  let slat2 = SLAT2 * DEGRAD;
+  let olon = OLON * DEGRAD;
+  let olat = OLAT * DEGRAD;
+  let sn =
+    Math.tan(Math.PI * 0.25 + slat2 * 0.5) /
+    Math.tan(Math.PI * 0.25 + slat1 * 0.5);
+  sn = Math.log(Math.cos(slat1) / Math.cos(slat2)) / Math.log(sn);
+  let sf = Math.tan(Math.PI * 0.25 + slat1 * 0.5);
+  sf = (Math.pow(sf, sn) * Math.cos(slat1)) / sn;
+  let ro = Math.tan(Math.PI * 0.25 + olat * 0.5);
+  ro = (re * sf) / Math.pow(ro, sn);
+  let rs = {};
+
+  rs["lat"] = getLat;
+  rs["lng"] = getLng;
+  var ra = Math.tan(Math.PI * 0.25 + getLat * DEGRAD * 0.5);
+  ra = (re * sf) / Math.pow(ra, sn);
+  var theta = getLng * DEGRAD - olon;
+  if (theta > Math.PI) theta -= 2.0 * Math.PI;
+  if (theta < -Math.PI) theta += 2.0 * Math.PI;
+  theta *= sn;
+  rs["x"] = Math.floor(ra * Math.sin(theta) + XO + 0.5);
+  rs["y"] = Math.floor(ro - ra * Math.cos(theta) + YO + 0.5);
+
+  // console.log(rs["x"], rs["y"]);
+
+  const grids = {
+    gridX: rs["x"],
+    gridY: rs["y"],
+  };
+
+  store.dispatch("GET_GRIDS", grids);
+}
+
+function getCoordinate() {
+  /* global kakao */
+  const geocoder = new kakao.maps.services.Geocoder();
+  const serachAddress = store.state.findAreaData.sidoStation;
+
+  geocoder.addressSearch(serachAddress, function (result, status) {
+    if (status === kakao.maps.services.Status.OK) {
+      const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+      // console.log("검색한 주소의 좌표 = ", coords);
+      getGridXY(coords.Ma, coords.La);
+    } else {
+      console.log("못찾았어요ㅜ ");
+    }
+  });
+  // console.log("getCoordinate = ", serachAddress);
+}
+
+// function getTimeNow() {
+//   let mycurrentDate = new Date();
+//   let hours = mycurrentDate.getHours();
+//   let minutes = mycurrentDate.getMinutes();
+//   let seconds = mycurrentDate.getSeconds();
+//   let date =
+//     this.sysPaddingZro(mycurrentDate.getFullYear(), 4) +
+//     "-" +
+//     this.sysPaddingZro(mycurrentDate.getMonth() + 1, 2) +
+//     "-" +
+//     this.sysPaddingZro(mycurrentDate.getDate(), 2) +
+//     " " +
+//     this.customDate[mycurrentDate.getDay()];
+
+//   const nowTime = {
+//     hours: hours,
+//     minutes: minutes,
+//     seconds: seconds,
+//     date: date,
+//   };
+
+//   return nowTime;
+// }
+
 export const instance = createInstance();
-export { fetchData, fetchWeatherData };
+export {
+  getCoordinate,
+  getGridXY,
+  fetchData,
+  getShortTermForecast,
+  // getTimeNow,
+  findMetStation,
+};
