@@ -180,21 +180,21 @@ export default {
           shortTerm[i].category === "SKY"
         ) {
           this.weatherIcon = shortTerm[i].fcstValue;
-          console.log(shortTerm[i].fcstValue);
+          // console.log(shortTerm[i].fcstValue);
         } else if (
           shortTerm[i].fcstTime === String(Number(nowTime) + 1) + "00" &&
           shortTerm[i].category === "SKY"
         ) {
           this.weatherIcon = shortTerm[i].fcstValue;
-          console.log(shortTerm[i].fcstValue);
+          // console.log(shortTerm[i].fcstValue);
         }
       }
 
-      console.log("time=", nowTime);
+      // console.log("time=", nowTime);
     },
     checkDay() {
       let day = getTimeNow().day;
-      console.log("day", day);
+      // console.log("day", day);
       this.time = day;
     },
   },
@@ -216,7 +216,7 @@ export default {
       this.getWeatherdata();
     },
     checkShortTerm(val) {
-      console.log(val.value);
+      // console.log(val.value);
       this.showIcon(val);
     },
   },

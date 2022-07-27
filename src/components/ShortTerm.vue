@@ -37,7 +37,6 @@ export default {
       { text: "강수량 °mm", value: "PCP" },
       { text: "습도 %", value: "REH" },
       { text: "풍속 m/s", value: "WSD" },
-      // { text: "아이콘", value: "icon" },
     ],
     dateData: "",
     desserts: [],
@@ -121,9 +120,11 @@ export default {
             } else if (category === "WSD") {
               saveData[`${category}`] = fcstValue + "m/s";
             } else if (category === "SKY") {
-              if (fcstValue === 1 || fcstValue === 2) {
+              if (fcstValue == 1) {
                 saveData[`${category}`] = "맑음";
-              } else if (fcstValue === 3) {
+              } else if (fcstValue == 2) {
+                saveData[`${category}`] = "맑음";
+              } else if (fcstValue == 3) {
                 saveData[`${category}`] = "구름 많음";
               } else {
                 saveData[`${category}`] = "흐림";
