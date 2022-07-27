@@ -72,6 +72,7 @@ export default new Vuex.Store({
       context.commit("SAVE_GRIDS", gridXY);
       getNowTerm()
         .then(function (res) {
+          console.log("여기");
           context.commit(
             "SAVE_NOW_WEATHER_DATAS",
             res.data.response.body.items.item

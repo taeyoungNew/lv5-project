@@ -51,19 +51,63 @@ function findMetStation() {
 // getShortTermForecast
 // fetchWeatherData
 function getNowTerm() {
+  // 초단기실황
+  // console.log("getNowTerm = ", String(getTimeHours) + String(getTimeMinutes));
+  console.log("초단기실황");
+  let hour = getTimeHours;
+  let minutes = getTimeMinutes;
+  let resultTime = "";
+
+  if (hour < 10) {
+    console.log("여기", "0" + String(hour) + String(minutes));
+    if (minutes < 30) {
+      minutes = 30;
+      resultTime = "0" + String(hour - 1) + String(minutes);
+    } else {
+      minutes = 30;
+      resultTime = "0" + String(hour) + String(minutes);
+    }
+  } else {
+    if (minutes < 30) {
+      minutes = 30;
+      resultTime = String(hour - 1) + String(minutes);
+    } else {
+      minutes = 30;
+      resultTime = String(hour) + String(minutes);
+    }
+  }
   return axios.get(
-    // 초단기실황
-    `/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?serviceKey=${serviceKey}&dataType=json&numOfRows=10&pageNo=1&base_date=${getDate}&base_time=${
-      String(getTimeHours) + String(getTimeMinutes)
-    }&nx=${store.state.gridX}&ny=${store.state.gridY}`
+    `/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?serviceKey=${serviceKey}&numOfRows=10&dataType=json&pageNo=1&base_date=${getDate}&base_time=${resultTime}
+    &nx=${store.state.gridX}&ny=${store.state.gridY}`
   );
 }
 
 function getShortTerm() {
+  let hour = getTimeHours;
+  let minutes = getTimeMinutes;
+  let resultTime = "";
+
+  if (hour < 10) {
+    console.log("여기", "0" + String(hour) + String(minutes));
+    if (minutes < 30) {
+      minutes = 30;
+      resultTime = "0" + String(hour - 1) + String(minutes);
+    } else {
+      minutes = 30;
+      resultTime = "0" + String(hour) + String(minutes);
+    }
+  } else {
+    if (minutes < 30) {
+      minutes = 30;
+      resultTime = String(hour - 1) + String(minutes);
+    } else {
+      minutes = 30;
+      resultTime = String(hour) + String(minutes);
+    }
+  }
+  console.log(resultTime);
   return axios.get(
-    `/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst?serviceKey=${serviceKey}&dataType=json&numOfRows=100&pageNo=1&base_date=${getDate}&base_time=${
-      String(getTimeHours) + String(getTimeMinutes)
-    }&nx=${store.state.gridX}&ny=${store.state.gridY}`
+    `/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst?serviceKey=${tmServiceKey}&dataType=json&numOfRows=100&pageNo=1&base_date=${getDate}&base_time=${resultTime}&nx=${store.state.gridX}&ny=${store.state.gridY}`
   );
 }
 
@@ -71,7 +115,7 @@ function treeDaysWeather() {
   // let getTimeHours = getTimeHours;
   let mycurrentDate = new Date();
   let getNow = mycurrentDate.getHours();
-  let dataNum = "";
+  // let dataNum = "";
   let near = 0;
   let abs = 0;
   let min = 1000;
@@ -85,7 +129,7 @@ function treeDaysWeather() {
 
   if (fetchTimes.includes(getNow)) {
     return axios.get(
-      `/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${serviceKey}&dataType=json&numOfRows=1000&pageNo=1&base_date=${getDate}&base_time=${getNow}&nx=${store.state.gridX}&ny=${store.state.gridY}`
+      `/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${tmServiceKey}&dataType=json&numOfRows=1000&pageNo=1&base_date=${getDate}&base_time=${getNow}&nx=${store.state.gridX}&ny=${store.state.gridY}`
     );
   } else {
     getNow = mycurrentDate.getHours();
@@ -99,31 +143,31 @@ function treeDaysWeather() {
         min = abs;
         near = target[i];
 
-        if (getNow === 0 || getNow === 1) {
+        if (getNow == 0 || getNow == 1) {
           let date = Number(getDate) - 1;
           return axios.get(
-            `/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${serviceKey}&dataType=json&numOfRows=1000&pageNo=1&base_date=${date}&base_time=${"2300"}&nx=${
+            `/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${tmServiceKey}&dataType=json&numOfRows=1000&pageNo=1&base_date=${date}&base_time=${"2300"}&nx=${
               store.state.gridX
             }&ny=${store.state.gridY}`
           );
         }
         if (getNow < near && getNow !== 0) {
           return axios.get(
-            `/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${serviceKey}&dataType=json&numOfRows=1000&pageNo=1&base_date=${getDate}&base_time=${
+            `/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${tmServiceKey}&dataType=json&numOfRows=1000&pageNo=1&base_date=${getDate}&base_time=${
               "0" + String(near - 3) + "00"
             }&nx=${store.state.gridX}&ny=${store.state.gridY}`
           );
         }
 
         return axios.get(
-          `/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${serviceKey}&dataType=json&numOfRows=1000&pageNo=1&base_date=${getDate}&base_time=${
+          `/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${tmServiceKey}&dataType=json&numOfRows=1000&pageNo=1&base_date=${getDate}&base_time=${
             "0" + String(near) + "00"
           }&nx=${store.state.gridX}&ny=${store.state.gridY}`
         );
       }
     }
   }
-  console.log(dataNum);
+  // console.log(dataNum);
 }
 
 function getGridXY(getLng, getLat) {
@@ -205,28 +249,28 @@ async function findMeasuring(getTmXY) {
       `/B552584/MsrstnInfoInqireSvc/getNearbyMsrstnList?tmX=${getTmXY.x}&tmY=${getTmXY.y}&returnType=json&serviceKey=${tmServiceKey}`
     )
     .then(function (res) {
-      console.log(res.data.response.body.items);
+      // console.log(res.data.response.body.items);
       measuringDatas = res.data.response.body.items;
     })
     .catch(function (res) {
       console.log(res);
     });
 
-  console.log("measuringDatas = ", measuringDatas);
+  // console.log("measuringDatas = ", measuringDatas);
 
   for (let i = 0; i < measuringDatas.length; i++) {
     measuringDatas[i].tm;
     tmDatas.push(measuringDatas[i].tm);
     if (measuringDatas[i].tm === Math.min(...tmDatas)) {
       measuringData = measuringDatas[i];
-      console.log("measuringData = ", measuringData.stationName);
+      // console.log("measuringData = ", measuringData.stationName);
     }
   }
 
   let airData = airDatas.find(
     (x) => x.stationName === measuringData.stationName
   );
-  console.log(airData);
+  // console.log(airData);
   store.state.findAreaData = airData;
 }
 
@@ -280,29 +324,30 @@ function getTimeNow() {
 
   getTimeHours = nowTime.hours;
   getTimeMinutes = nowTime.minutes;
+  getDate = nowTime.date;
 
-  if (
-    String(getTimeHours) + String(getTimeMinutes) >=
-    String(getTimeHours) + "30"
-  ) {
-    if (getTimeHours < "10") {
-      getTimeHours = nowTime.hours;
-      getTimeMinutes = nowTime.minutes;
-    } else {
-      getTimeHours = nowTime.hours;
-      getTimeMinutes = "30";
-    }
-  } else {
-    if (getTimeHours < 10) {
-      getTimeHours = "0" + String(mycurrentDate.getHours() - 1);
-      getTimeMinutes = "50";
-    } else {
-      getTimeHours = "0" + String(mycurrentDate.getHours() - 1);
-      getTimeMinutes = "30";
-    }
-  }
+  // console.log(nowTime.hours, nowTime.minutes);
 
-  getDate = date;
+  // if (
+  //   String(getTimeHours) + String(getTimeMinutes) >=
+  //   String(getTimeHours) + "30"
+  // ) {
+  //   if (getTimeHours < 10) {
+  //     getTimeHours = nowTime.hours;
+  //     getTimeMinutes = nowTime.minutes;
+  //   } else {
+  //     getTimeHours = nowTime.hours;
+  //     getTimeMinutes = "30";
+  //   }
+  // } else {
+  //   if (getTimeHours < 10) {
+  //     getTimeHours = "0" + String(mycurrentDate.getHours() - 1);
+  //     getTimeMinutes = "50";
+  //   } else {
+  //     getTimeHours = "0" + String(mycurrentDate.getHours() - 1);
+  //     getTimeMinutes = "30";
+  //   }
+  // }
   return nowTime;
 }
 
