@@ -80,8 +80,7 @@ export default {
   },
   methods: {
     detailsInfo(params) {
-      // console.log("검색한 미세먼지: ", params);
-
+      console.log("검색한 미세먼지: ", params);
       if (params !== "" || null) {
         this.detailDatas = [
           {
@@ -115,14 +114,9 @@ export default {
     },
   },
   watch: {
-    checkAirData(val) {
-      this.airDustData = val;
-      this.detailsInfo(val);
+    async checkAirData(val) {
+      await this.detailsInfo(val);
     },
-  },
-  created() {
-    // this.showInfo();
-    // this.detailsInfo();
   },
 };
 </script>
