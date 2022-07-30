@@ -1,16 +1,93 @@
 <template>
   <div>
     <div id="map"></div>
+    <!-- <img src="@/assets/data/icons/sun_icon.png" style="width: 50px" /> -->
   </div>
 </template>
 
 <script>
-import { getGridXY } from "@/api/index";
+import { getGridXY, mapWeatherGrids } from "@/api/index";
 // import cord from "@/assets/data/localCoordinates.json";
 export default {
   data() {
     return {
+      sunIcon:
+        "https://cdn4.iconfinder.com/data/icons/the-weather-is-nice-today/64/weather_3-128.png",
+      cloudyIcon:
+        "https://cdn4.iconfinder.com/data/icons/the-weather-is-nice-today/64/weather_2-256.png",
+      blurIcon:
+        "https://cdn4.iconfinder.com/data/icons/the-weather-is-nice-today/64/weather_1-256.png",
+      rainIcon:
+        "https://cdn4.iconfinder.com/data/icons/the-weather-is-nice-today/64/weather_6-256.png",
+
       message: "",
+      map: "",
+      appkey: "41559690bf91cc5e8d8acc64f8d3a36f",
+      sidoCoord: [
+        {
+          sidoName: "서울",
+          sidoCoord: {
+            x: 126.97645522472396,
+            y: 37.570436777354104,
+          },
+        },
+        {
+          sidoName: "광주",
+          sidoCoord: {
+            x: 126.84984846589778,
+            y: 35.16196557717594,
+          },
+        },
+        {
+          sidoName: "인천",
+          sidoCoord: {
+            x: 126.64707979188897,
+            y: 37.39457616104988,
+          },
+        },
+        {
+          sidoName: "대전",
+          sidoCoord: {
+            x: 127.38483034470224,
+            y: 36.356414570615115,
+          },
+        },
+        {
+          sidoName: "부산",
+          sidoCoord: {
+            x: 129.07086907370464,
+            y: 35.17647509098923,
+          },
+        },
+        {
+          sidoName: "강릉",
+          sidoCoord: {
+            x: 128.87763636151897,
+            y: 37.749190607364945,
+          },
+        },
+        {
+          sidoName: "목포",
+          sidoCoord: {
+            x: 126.36467027545984,
+            y: 34.81178027920182,
+          },
+        },
+        {
+          sidoName: "포항",
+          sidoCoord: {
+            x: 129.39450936981302,
+            y: 36.04703568158347,
+          },
+        },
+        {
+          sidoName: "대구",
+          sidoCoord: {
+            x: 128.5899805104158,
+            y: 35.87124542120985,
+          },
+        },
+      ],
     };
   },
   mounted() {
@@ -20,87 +97,108 @@ export default {
       const script = document.createElement("script");
       /* global kakao */
       script.onload = () => kakao.maps.load(this.initMap);
-      script.src =
-        "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=41559690bf91cc5e8d8acc64f8d3a36f&libraries=services";
+      script.src = `http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${this.appkey}&libraries=services,clusterer,drawing`;
       document.head.appendChild(script);
     }
     // 지도를 표시할 div
-
-    /////////////////////////////////////////////////////// 지도를 생성합니다
-
-    // 지도에 클릭 이벤트를 등록합니다
-    // 지도를 클릭하면 마지막 파라미터로 넘어온 함수를 호출합니다
   },
   methods: {
     initMap() {
-      // console.log("cord = ", cord);
+      // let changeMapType = "";
       let mapContainer = document.getElementById("map"), // 지도를 표시할 div
         mapOption = {
           center: new kakao.maps.LatLng(36.464343, 127.947613), // 지도의 중심좌표
           level: 12, // 지도의 확대 레벨
         };
-
-      let map = new kakao.maps.Map(mapContainer, mapOption);
-      // map.addOverlayMapTypeId(mapType);
-
-      let positions = [
-        {
-          nama: "인천",
-          LatLng: new kakao.maps.LatLng(37.39663113911868, 126.6533944362663),
-        },
-        {
-          nama: "서울",
-          LatLng: new kakao.maps.LatLng(37.56356944444444, 126.98000833333333),
-        },
-        {
-          nama: "부산",
-          LatLng: new kakao.maps.LatLng(35.17701944444444, 129.07695277777776),
-        },
-        {
-          nama: "대구",
-          LatLng: new kakao.maps.LatLng(35.868541666666665, 128.60355277777776),
-        },
-        {
-          nama: "광주",
-          LatLng: new kakao.maps.LatLng(35.156974999999996, 126.85336388888888),
-        },
-        {
-          nama: "대전",
-          LatLng: new kakao.maps.LatLng(36.347119444444445, 127.38656666666667),
-        },
-        {
-          nama: "대전",
-          LatLng: new kakao.maps.LatLng(36.347119444444445, 127.38656666666667),
-        },
-        {
-          nama: "울산",
-          LatLng: new kakao.maps.LatLng(35.53540833333333, 129.3136888888889),
-        },
-      ];
-      // 좌표얻기
-      kakao.maps.event.addListener(map, "click", function (mouseEvent) {
+      this.map = new kakao.maps.Map(mapContainer, mapOption);
+      // let map = new kakao.maps.Map(mapContainer, mapOption);
+      // changeMapType = kakao.maps.MapTypeId.TERRAIN;
+      // this.map.ddOverlayMapTypeId(changeMapType);
+      kakao.maps.event.addListener(this.map, "click", function (mouseEvent) {
         // 클릭한 위도, 경도 정보를 가져옵니다
-        var latlng = mouseEvent.latLng;
-
+        let latlng = mouseEvent.latLng;
+        console.log("latlng", latlng);
         const gridX = latlng.getLng();
         const gridY = latlng.getLat();
         getGridXY(gridX, gridY);
       });
-
-      positions.forEach(function (pos) {
-        let marker = new kakao.maps.Marker({
-          position: pos.LatLng,
+    },
+    sendAreaDatas() {
+      mapWeatherGrids(this.sidoCoord);
+    },
+    createOverlay(params) {
+      // console.log("createOverlay params", params);
+      const map = this.map;
+      const getMapWeather = params;
+      console.log("getMapWeather", getMapWeather);
+      for (let i = 0; i < getMapWeather.length; i++) {
+        let skyStatus = "";
+        if (getMapWeather[i].skyVal === "1") {
+          skyStatus = this.sunIcon;
+        } else if (getMapWeather[i].skyVal === "2") {
+          skyStatus = this.sunIcon;
+        } else if (getMapWeather[i].skyVal === "3") {
+          skyStatus = this.cloudyIcon;
+        } else if (getMapWeather[i].skyVal === "4") {
+          skyStatus = this.blurIcon;
+        }
+        if (getMapWeather[i].rainVal != 0) {
+          skyStatus = this.rainIcon;
+        }
+        let content = `<div class="icon-box">
+                      <h4>${getMapWeather[i].sidoName}</h4>
+                      <img src="${skyStatus}"  class="weather-icon" />
+                      <p class="temperature-text">${getMapWeather[i].temVal}°C</p>
+                    </ div>`;
+        let position = new kakao.maps.LatLng(
+          getMapWeather[i].coordY,
+          getMapWeather[i].coordX
+        );
+        let customOverlay = new kakao.maps.CustomOverlay({
+          content: content,
+          position: position,
         });
-        marker.setMap(map);
-      });
+        customOverlay.setMap(map);
+      }
+    },
+  },
+  created() {
+    this.sendAreaDatas();
+  },
+  computed: {
+    checkmapWeather() {
+      return this.$store.state.mapOnWeatherDatas;
+    },
+  },
+  watch: {
+    async checkmapWeather(val) {
+      await this.createOverlay(val);
     },
   },
 };
 </script>
 
-<style scoped>
+<style>
 #map {
   width: 100%;
   height: 900px;
+  border-radius: 5px;
+}
+
+.icon-box {
+  display: inline-block;
+  background-color: white;
+  border-radius: 5px;
+  text-align: center;
+  padding: 4px;
+}
+.temperature-text {
+  font-size: 20px;
+}
+.weather-icon {
+  width: 70px;
+}
+.icon-box > p {
+  margin-bottom: 0px;
 }
 </style>

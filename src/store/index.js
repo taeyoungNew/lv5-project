@@ -16,6 +16,7 @@ export default new Vuex.Store({
     defaultSerch: "전국",
     airDatas: [],
     findAreaData: "",
+    mapOnWeatherDatas: "",
     nowWeatherData: "",
     shortTermData: "",
     threeDaysTem: "",
@@ -36,6 +37,9 @@ export default new Vuex.Store({
     SAVE_GRIDS(state, gridXY) {
       state.gridX = gridXY["gridX"];
       state.gridY = gridXY["gridY"];
+    },
+    SAVE_MAP_ON_WEATHER_DATAS(state, params) {
+      state.mapOnWeatherDatas = params;
     },
     SAVE_NOW_WEATHER_DATAS(state, params) {
       state.nowWeatherData = params;
@@ -72,7 +76,7 @@ export default new Vuex.Store({
       context.commit("SAVE_GRIDS", gridXY);
       getNowTerm()
         .then(function (res) {
-          console.log("여기");
+          console.log("여기 = ", res);
           context.commit(
             "SAVE_NOW_WEATHER_DATAS",
             res.data.response.body.items.item
@@ -103,6 +107,9 @@ export default new Vuex.Store({
         .catch(function (error) {
           console.log(error);
         });
+    },
+    WEATHER_ON_MAP(context, payLoad) {
+      context.commit("SAVE_MAP_ON_WEATHER_DATAS", payLoad);
     },
   },
   modules: {},

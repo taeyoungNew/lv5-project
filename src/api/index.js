@@ -1,13 +1,13 @@
 import axios from "axios";
 import store from "@/store/index";
-// import { get } from "core-js/core/dict";
-// import { getMetadataKeys } from "core-js/fn/reflect";
 
 let getTimeHours = "";
 let getTimeMinutes = "";
-// console.log(getTimeHours, getTimeMinutes);
 let getDate = "";
-// const baseTime = [02, 05, 08, 11, 14, 17, 20, 23];
+let rainVal = "";
+let temVal = "";
+let skyVal = "";
+
 const fetchTimes = [
   "0200",
   "0500",
@@ -52,63 +52,118 @@ function findMetStation() {
 // fetchWeatherData
 function getNowTerm() {
   // 초단기실황
-  // console.log("getNowTerm = ", String(getTimeHours) + String(getTimeMinutes));
-  console.log("초단기실황");
   let hour = getTimeHours;
   let minutes = getTimeMinutes;
   let resultTime = "";
-
-  if (hour < 10) {
-    console.log("여기", "0" + String(hour) + String(minutes));
-    if (minutes < 30) {
-      minutes = 30;
-      resultTime = "0" + String(hour - 1) + String(minutes);
-    } else {
-      minutes = 30;
-      resultTime = "0" + String(hour) + String(minutes);
-    }
+  // console.log("getNowTerm", String(hour) + String(minutes));
+  if (minutes < 30) {
+    minutes = 30;
+    resultTime = String(hour - 1) + String(minutes);
   } else {
-    if (minutes < 30) {
-      minutes = 30;
-      resultTime = String(hour - 1) + String(minutes);
-    } else {
-      minutes = 30;
-      resultTime = String(hour) + String(minutes);
-    }
+    minutes = 30;
+    resultTime = String(hour) + String(minutes);
   }
+
+  if (resultTime.length == 3) {
+    resultTime = "0" + resultTime;
+  }
+
   return axios.get(
     `/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?serviceKey=${serviceKey}&numOfRows=10&dataType=json&pageNo=1&base_date=${getDate}&base_time=${resultTime}
     &nx=${store.state.gridX}&ny=${store.state.gridY}`
   );
 }
 
-function getShortTerm() {
+async function getShortTerm(params) {
+  getTimeNow();
   let hour = getTimeHours;
   let minutes = getTimeMinutes;
   let resultTime = "";
-
-  if (hour < 10) {
-    console.log("여기", "0" + String(hour) + String(minutes));
-    if (minutes < 30) {
-      minutes = 30;
-      resultTime = "0" + String(hour - 1) + String(minutes);
-    } else {
-      minutes = 30;
-      resultTime = "0" + String(hour) + String(minutes);
-    }
-  } else {
-    if (minutes < 30) {
-      minutes = 30;
-      resultTime = String(hour - 1) + String(minutes);
-    } else {
-      minutes = 30;
-      resultTime = String(hour) + String(minutes);
-    }
+  let gridX = "";
+  let gridY = "";
+  if (minutes < 30) {
+    minutes = 30;
+    resultTime = String(hour - 1) + String(minutes);
+  } else if (minutes > 30) {
+    minutes = 30;
+    resultTime = String(hour) + String(minutes);
   }
-  console.log(resultTime);
-  return axios.get(
-    `/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst?serviceKey=${tmServiceKey}&dataType=json&numOfRows=100&pageNo=1&base_date=${getDate}&base_time=${resultTime}&nx=${store.state.gridX}&ny=${store.state.gridY}`
-  );
+  if (resultTime.length == 3) {
+    resultTime = "0" + resultTime;
+  }
+
+  if (params) {
+    let gridXY = params;
+    let dataList = [];
+    let rainDataNum = "";
+    let tDataNum = "";
+
+    let skyDataNum = "";
+    // let selectList = [];
+    let srtTemNcst = "";
+    let srtTemFcst = "";
+    for (let i = 0; i < gridXY.length; i++) {
+      // 초단기실황
+      await axios
+        .get(
+          `/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?serviceKey=${serviceKey}&numOfRows=10&dataType=json&pageNo=1&base_date=${getDate}&base_time=${resultTime}
+        &nx=${gridXY[i].gridX}&ny=${gridXY[i].gridY}`
+        )
+        .then(function (res) {
+          srtTemNcst = res.data.response.body.items.item;
+          tDataNum = srtTemNcst.findIndex((x) => x.category === "T1H");
+          temVal = srtTemNcst[tDataNum].obsrValue;
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+
+      // 초단기예보
+      await axios
+        .get(
+          `/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst?serviceKey=${tmServiceKey}&dataType=json&numOfRows=36&pageNo=1&base_date=${getDate}&base_time=${resultTime}&nx=${gridXY[i].gridX}&ny=${gridXY[i].gridY}`
+        )
+        .then(function (res) {
+          srtTemFcst = res.data.response.body.items.item;
+          skyDataNum = srtTemFcst.findIndex((x) => x.category === "SKY");
+          rainDataNum = srtTemNcst.findIndex((x) => x.category === "RN1");
+          skyVal = srtTemFcst[skyDataNum].fcstValue;
+          rainVal = srtTemFcst[rainDataNum].fcstValue;
+          // console.log("skyVal", skyVal);
+          // console.log("rainVal", rainVal);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      dataList[i] = {
+        sidoName: gridXY[i].sidoName,
+        coordX: gridXY[i].coordX,
+        coordY: gridXY[i].coordY,
+        temVal: temVal,
+        skyVal: skyVal,
+        rainVal: rainVal,
+      };
+      console.log("dataList ", dataList);
+      // selectList = {
+      //   sidoName: gridXY[i].sidoName,
+      //   temVal: temVals[i],
+      //   skyVal: skyVals[i],
+      //   rainVal: rainVals[i],
+      //   coordX: gridXY[i].coordX,
+      //   coordY: gridXY[i].coordY,
+      // };
+
+      // dataList.push(selectList);
+    }
+    // console.log("selectList", selectList[i]);
+    store.dispatch("WEATHER_ON_MAP", dataList);
+  } else {
+    gridX = store.state.gridX;
+    gridY = store.state.gridY;
+    return axios.get(
+      `/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst?serviceKey=${tmServiceKey}&dataType=json&numOfRows=100&pageNo=1&base_date=${getDate}&base_time=${resultTime}&nx=${gridX}&ny=${gridY}`
+    );
+  }
 }
 
 function treeDaysWeather() {
@@ -122,10 +177,11 @@ function treeDaysWeather() {
   const target = [2, 5, 8, 11, 14, 17, 20, 23];
   // getNow = ;
   if (getNow < 10) {
-    getNow = "0" + String(getNow);
+    getNow = String(getNow);
   } else {
     getNow = String(getNow);
   }
+  console.log("getNow", getNow);
 
   if (fetchTimes.includes(getNow)) {
     return axios.get(
@@ -218,6 +274,65 @@ function getGridXY(getLng, getLat) {
     gridY: rs["y"],
   };
   store.dispatch("GET_GRIDS", grids);
+}
+
+function mapWeatherGrids(payLoad) {
+  const payload = [];
+  const grids = [];
+  // console.log("payLoad", payLoad);
+  for (let i = 0; i < payLoad.length; i++) {
+    payload.push("payLoad", payLoad[i]);
+  }
+
+  let RE = 6371.00877; // 지구 반경(km)
+  let GRID = 5.0; // 격자 간격(km)
+  let SLAT1 = 30.0; // 투영 위도1(degree)
+  let SLAT2 = 60.0; // 투영 위도2(degree)
+  let OLON = 126.0; // 기준점 경도(degree)
+  let OLAT = 38.0; // 기준점 위도(degree)
+  let XO = 43; // 기준점 X좌표(GRID)
+  let YO = 136; // 기1준점 Y좌표(GRID)
+
+  let DEGRAD = Math.PI / 180.0;
+  // let RADDEG = 180.0 / Math.PI;
+
+  let re = RE / GRID;
+  let slat1 = SLAT1 * DEGRAD;
+  let slat2 = SLAT2 * DEGRAD;
+  let olon = OLON * DEGRAD;
+  let olat = OLAT * DEGRAD;
+  let sn =
+    Math.tan(Math.PI * 0.25 + slat2 * 0.5) /
+    Math.tan(Math.PI * 0.25 + slat1 * 0.5);
+  sn = Math.log(Math.cos(slat1) / Math.cos(slat2)) / Math.log(sn);
+  let sf = Math.tan(Math.PI * 0.25 + slat1 * 0.5);
+  sf = (Math.pow(sf, sn) * Math.cos(slat1)) / sn;
+  let ro = Math.tan(Math.PI * 0.25 + olat * 0.5);
+  ro = (re * sf) / Math.pow(ro, sn);
+  let rs = {};
+  for (let i = 0; i < payLoad.length; i++) {
+    // console.log(payLoad[i].sidoCoord.y);
+    rs["lng"] = payLoad[i].sidoCoord.y;
+    rs["lat"] = payLoad[i].sidoCoord.x;
+    var ra = Math.tan(Math.PI * 0.25 + payLoad[i].sidoCoord.y * DEGRAD * 0.5);
+    ra = (re * sf) / Math.pow(ra, sn);
+    var theta = payLoad[i].sidoCoord.x * DEGRAD - olon;
+    if (theta > Math.PI) theta -= 2.0 * Math.PI;
+    if (theta < -Math.PI) theta += 2.0 * Math.PI;
+    theta *= sn;
+    rs["x"] = Math.floor(ra * Math.sin(theta) + XO + 0.5);
+    rs["y"] = Math.floor(ro - ra * Math.cos(theta) + YO + 0.5);
+    const grid = {
+      sidoName: payLoad[i].sidoName,
+      gridX: rs["x"],
+      gridY: rs["y"],
+      coordX: payLoad[i].sidoCoord.x,
+      coordY: payLoad[i].sidoCoord.y,
+    };
+    grids.push(grid);
+  }
+  // console.log(grids);
+  getShortTerm(grids);
 }
 
 function changeTmCoord(x, y) {
@@ -326,28 +441,6 @@ function getTimeNow() {
   getTimeMinutes = nowTime.minutes;
   getDate = nowTime.date;
 
-  // console.log(nowTime.hours, nowTime.minutes);
-
-  // if (
-  //   String(getTimeHours) + String(getTimeMinutes) >=
-  //   String(getTimeHours) + "30"
-  // ) {
-  //   if (getTimeHours < 10) {
-  //     getTimeHours = nowTime.hours;
-  //     getTimeMinutes = nowTime.minutes;
-  //   } else {
-  //     getTimeHours = nowTime.hours;
-  //     getTimeMinutes = "30";
-  //   }
-  // } else {
-  //   if (getTimeHours < 10) {
-  //     getTimeHours = "0" + String(mycurrentDate.getHours() - 1);
-  //     getTimeMinutes = "50";
-  //   } else {
-  //     getTimeHours = "0" + String(mycurrentDate.getHours() - 1);
-  //     getTimeMinutes = "30";
-  //   }
-  // }
   return nowTime;
 }
 
@@ -368,6 +461,7 @@ export {
   getCoordinate,
   changeTmCoord,
   getGridXY,
+  mapWeatherGrids,
   fetchData,
   findMetStation,
   getTimeNow,

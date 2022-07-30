@@ -36,15 +36,6 @@
         >
           {{ n.address_name }}
         </v-card>
-        <!-- <v-card
-          class="pa-3 list-card"
-          v-for="(n, index) in getAddress"
-          :key="index"
-          outlined
-          @click="selectArea(n.stationName)"
-        >
-          {{ n.sidoName }} {{ n.stationName }}
-        </v-card> -->
       </v-col>
       <v-col>
         <v-card id="pagination"> </v-card>
@@ -96,6 +87,7 @@ export default {
       this.getAddress = [];
       getCoordinate(stationName);
     },
+
     searchAreaInfo() {
       let airDatas = this.$store.state.airDatas;
       for (let i = 0; i < airDatas.length; i++) {
