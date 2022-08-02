@@ -4,7 +4,7 @@ import {
   fetchData,
   getNowTerm,
   getShortTerm,
-  treeDaysWeather,
+  threeDaysWeather,
   getTimeNow,
 } from "@/api/index";
 
@@ -76,7 +76,7 @@ export default new Vuex.Store({
       context.commit("SAVE_GRIDS", gridXY);
       getNowTerm()
         .then(function (res) {
-          console.log("여기 = ", res);
+          // console.log("여기 = ", res);
           context.commit(
             "SAVE_NOW_WEATHER_DATAS",
             res.data.response.body.items.item
@@ -97,7 +97,7 @@ export default new Vuex.Store({
           console.log(error);
         });
 
-      treeDaysWeather()
+      threeDaysWeather()
         .then(function (res) {
           context.commit(
             "SAVE_TREEDAYS_DATAS",

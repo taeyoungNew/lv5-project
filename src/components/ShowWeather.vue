@@ -31,11 +31,17 @@
             icon="fa-solid fa-cloud"
           >
           </font-awesome-icon>
+          <font-awesome-icon
+            v-if="weatherIcon == 5"
+            class="weather-icon"
+            icon="fa-solid fa-cloud-rain"
+          >
+          </font-awesome-icon>
         </v-col>
 
         <font-awesome-icon icon="fa-solid fa-temperature-half " class="fa-3x" />
 
-        <v-col class="text-h2" cols="6"> {{ currentTemperature }}&deg;C </v-col>
+        <v-col class="text-h2"> {{ currentTemperature }}&deg;C </v-col>
         <v-col cols="12"> </v-col>
       </v-row>
     </v-card-text>
@@ -118,6 +124,15 @@ export default {
     return {
       weatherIcon: 0,
       labels: ["SU", "MO", "TU", "WED", "TH", "FR", "SA"],
+      daysWeek: [
+        "Sunday",
+        "Monday",
+        "Tuseday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ],
       time: 0,
       currentTemperature: "",
       getWeather: "",
@@ -170,36 +185,33 @@ export default {
       this.humidityPersent = this.nowWeather[5].obsrValue;
       this.windSpeed = this.nowWeather[9].obsrValue;
     },
+    mediumTermForecast() {
+      let time = getTimeNow().day;
+      console.log("time = ", time);
+    },
     showIcon(val) {
       let shortTerm = val;
       let nowTime = getTimeNow().hours;
-
-      for (let i = 0; i < shortTerm.length; i++) {
-        if (
-          shortTerm[i].fcstTime === "0" + String(Number(nowTime) + 1) + "00" &&
-          shortTerm[i].category === "SKY"
-        ) {
-          this.weatherIcon = shortTerm[i].fcstValue;
-          // console.log(shortTerm[i].fcstValue);
-        } else if (
-          shortTerm[i].fcstTime === String(Number(nowTime) + 1) + "00" &&
-          shortTerm[i].category === "SKY"
-        ) {
-          this.weatherIcon = shortTerm[i].fcstValue;
-          // console.log(shortTerm[i].fcstValue);
-        }
+      let fcstTime = String(Number(nowTime) + 1) + "00";
+      if (fcstTime.length === 3) {
+        fcstTime = "0" + fcstTime;
       }
-
-      // console.log("time=", nowTime);
+      let skyNum = shortTerm.findIndex((val) => val.category === "SKY");
+      let skyData = shortTerm[skyNum];
+      this.weatherIcon = skyData.fcstValue;
+      if (this.hourPrecipitation != 0) {
+        this.weatherIcon = 5;
+      }
     },
     checkDay() {
       let day = getTimeNow().day;
-      // console.log("day", day);
+
       this.time = day;
     },
   },
   created() {
     this.checkDay();
+    this.mediumTermForecast();
   },
   computed: {
     checkWeather() {

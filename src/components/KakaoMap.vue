@@ -117,7 +117,7 @@ export default {
       kakao.maps.event.addListener(this.map, "click", function (mouseEvent) {
         // 클릭한 위도, 경도 정보를 가져옵니다
         let latlng = mouseEvent.latLng;
-        console.log("latlng", latlng);
+        // console.log("latlng", latlng);
         const gridX = latlng.getLng();
         const gridY = latlng.getLat();
         getGridXY(gridX, gridY);
@@ -127,11 +127,11 @@ export default {
       mapWeatherGrids(this.sidoCoord);
     },
     createOverlay(params) {
-      // console.log("createOverlay params", params);
       const map = this.map;
       const getMapWeather = params;
-      console.log("getMapWeather", getMapWeather);
+      // console.log("getMapWeather", getMapWeather);
       for (let i = 0; i < getMapWeather.length; i++) {
+        // console.log("rain val", Number(getMapWeather[i].rainVal));
         let skyStatus = "";
         if (getMapWeather[i].skyVal === "1") {
           skyStatus = this.sunIcon;
@@ -142,7 +142,7 @@ export default {
         } else if (getMapWeather[i].skyVal === "4") {
           skyStatus = this.blurIcon;
         }
-        if (getMapWeather[i].rainVal != 0) {
+        if (getMapWeather[i].rainVal !== "0") {
           skyStatus = this.rainIcon;
         }
         let content = `<div class="icon-box">

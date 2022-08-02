@@ -75,7 +75,7 @@ function getNowTerm() {
 }
 
 async function getShortTerm(params) {
-  getTimeNow();
+  await getTimeNow();
   let hour = getTimeHours;
   let minutes = getTimeMinutes;
   let resultTime = "";
@@ -92,7 +92,9 @@ async function getShortTerm(params) {
     resultTime = "0" + resultTime;
   }
 
+  // params로 넘어 온 값이 있으면 아래의 코드 실행
   if (params) {
+    // console.log("params = ", params);
     let gridXY = params;
     let dataList = [];
     let rainDataNum = "";
@@ -113,6 +115,11 @@ async function getShortTerm(params) {
           srtTemNcst = res.data.response.body.items.item;
           tDataNum = srtTemNcst.findIndex((x) => x.category === "T1H");
           temVal = srtTemNcst[tDataNum].obsrValue;
+          rainDataNum = srtTemNcst.findIndex((x) => x.category === "RN1");
+          rainVal = srtTemNcst[rainDataNum].obsrValue;
+          // console.log("rainDataNum = ", rainDataNum);
+          // console.log("rainVal = ", rainVal);
+          // console.log("srtTemNcst = ", srtTemNcst);
         })
         .catch(function (error) {
           console.log(error);
@@ -126,9 +133,7 @@ async function getShortTerm(params) {
         .then(function (res) {
           srtTemFcst = res.data.response.body.items.item;
           skyDataNum = srtTemFcst.findIndex((x) => x.category === "SKY");
-          rainDataNum = srtTemNcst.findIndex((x) => x.category === "RN1");
           skyVal = srtTemFcst[skyDataNum].fcstValue;
-          rainVal = srtTemFcst[rainDataNum].fcstValue;
           // console.log("skyVal", skyVal);
           // console.log("rainVal", rainVal);
         })
@@ -143,19 +148,8 @@ async function getShortTerm(params) {
         skyVal: skyVal,
         rainVal: rainVal,
       };
-      console.log("dataList ", dataList);
-      // selectList = {
-      //   sidoName: gridXY[i].sidoName,
-      //   temVal: temVals[i],
-      //   skyVal: skyVals[i],
-      //   rainVal: rainVals[i],
-      //   coordX: gridXY[i].coordX,
-      //   coordY: gridXY[i].coordY,
-      // };
-
-      // dataList.push(selectList);
     }
-    // console.log("selectList", selectList[i]);
+
     store.dispatch("WEATHER_ON_MAP", dataList);
   } else {
     gridX = store.state.gridX;
@@ -166,7 +160,7 @@ async function getShortTerm(params) {
   }
 }
 
-function treeDaysWeather() {
+function threeDaysWeather() {
   // let getTimeHours = getTimeHours;
   let mycurrentDate = new Date();
   let getNow = mycurrentDate.getHours();
@@ -279,7 +273,6 @@ function getGridXY(getLng, getLat) {
 function mapWeatherGrids(payLoad) {
   const payload = [];
   const grids = [];
-  // console.log("payLoad", payLoad);
   for (let i = 0; i < payLoad.length; i++) {
     payload.push("payLoad", payLoad[i]);
   }
@@ -331,12 +324,12 @@ function mapWeatherGrids(payLoad) {
     };
     grids.push(grid);
   }
-  // console.log(grids);
+  // console.log("grids", grids);
   getShortTerm(grids);
 }
 
 function changeTmCoord(x, y) {
-  console.log("x", x, "y", y);
+  // console.log("x", x, "y", y);
   axios
     .get(
       `https://dapi.kakao.com/v2/local/geo/transcoord.json?x=${x}&y=${y}&input_coord=WGS84&output_coord=TM`,
@@ -409,11 +402,16 @@ function getCoordinate(params) {
 
 function getTimeNow() {
   let mycurrentDate = new Date();
+
+  // console.log("month = ", mycurrentDate.getMonth());
+  // console.log("date = ", mycurrentDate.getDate());
   let date =
     sysPaddingZro(mycurrentDate.getFullYear(), 4) +
     "0" +
     +sysPaddingZro(mycurrentDate.getMonth() + 1, 2) +
-    +sysPaddingZro(mycurrentDate.getDate(), 2);
+    sysPaddingZro(mycurrentDate.getDate(), 2);
+
+  // console.log("date", date);
   let hours = "";
   if (mycurrentDate.getHours() < 10) {
     hours = "0" + mycurrentDate.getHours();
@@ -440,7 +438,6 @@ function getTimeNow() {
   getTimeHours = nowTime.hours;
   getTimeMinutes = nowTime.minutes;
   getDate = nowTime.date;
-
   return nowTime;
 }
 
@@ -449,6 +446,7 @@ function sysPaddingZro(lnum, mydpt) {
   for (let i = 0; i < mydpt; i++) {
     clckzro += "0";
   }
+  // console.log((clckzro + lnum).slice(-mydpt));
   return (clckzro + lnum).slice(-mydpt);
 }
 setInterval(() => {
@@ -467,5 +465,5 @@ export {
   getTimeNow,
   getNowTerm,
   getShortTerm,
-  treeDaysWeather,
+  threeDaysWeather,
 };
