@@ -4,7 +4,7 @@
     <v-card>
       <v-container class="grey lighten-3">
         <v-row style="position: relative">
-          <v-col>
+          <v-col xl="7" lg="12" md="12" sm="12" xm="12">
             <v-card outlined>
               <kakao-map />
             </v-card>
@@ -34,16 +34,26 @@ import AirInpo from "@/components/AirInpo.vue";
 import SearchRegion from "@/components/SearchRegion.vue";
 import ShowWeather from "@/components/ShowWeather.vue";
 import ShortTerm from "@/components/ShortTerm.vue";
-// import ShortTerm from "@/components/ShortTerm.vue";
 
 export default {
   components: { KakaoMap, AirInpo, SearchRegion, ShowWeather, ShortTerm },
+
   created() {
     this.fetchData();
   },
   methods: {
     fetchData() {
       this.$store.dispatch("FETCH_DATAS", this.$store.state.defaultSerch);
+    },
+  },
+  watch: {
+    loader() {
+      const load = this.loader;
+      this[load] = !this[load];
+
+      setTimeout(() => (this[load] = false), 3000);
+
+      this.loader = null;
     },
   },
 };
