@@ -3,10 +3,10 @@
     <v-row>
       <v-col>
         <v-btn class="ma-2" :color="btnOneColor" @click="shortTemBtn(1)">
-          오늘
+          오늘 날씨
         </v-btn>
         <v-btn class="ma-2" :color="btnTowColor" @click="shortTemBtn(2)">
-          내일
+          내일 날씨
         </v-btn>
       </v-col>
     </v-row>
@@ -79,7 +79,6 @@ export default {
   }),
   methods: {
     shortTemBtn(param) {
-      console.log("param = ", param);
       if (param == 1) {
         this.btnOneColor = "primary";
         this.btnTowColor = "secondary";
@@ -102,7 +101,7 @@ export default {
 
       this.time = String(Number(this.dateData.hours));
 
-      for (let num = 0; num < 24; num++) {
+      for (let num = 1; num < 24; num++) {
         await this.todayProperty(getWeather, num);
       }
 
@@ -119,18 +118,17 @@ export default {
       let time = "";
       let date = this.dateData.date;
       time = this.time;
-      // console.log("time = ", time);
+
       for (let i = 0; i < getWeather.length; i++) {
         if (date === getWeather[i].fcstDate) {
-          // console.log("num = ", num);
           time = String(Number(this.time) + num) + "00";
           if (time.length < 4) {
             time = "0" + time;
           }
           if (time === getWeather[i].fcstTime) {
+            console.log(time);
             category = getWeather[i].category;
             fcstValue = getWeather[i].fcstValue;
-
             if (category === "TMP") {
               saveData[`${category}`] = fcstValue + "°C";
             } else if (category === "REH") {
@@ -150,7 +148,6 @@ export default {
             } else {
               saveData[`${category}`] = fcstValue;
             }
-            // console.log("saveData = ", saveData);
 
             if (Object.keys(saveData).length > 11) {
               saveData["fcstTime"] =
@@ -159,8 +156,29 @@ export default {
               this.todayDatas.push(saveData);
 
               if (this.todayDatas.some((val) => val.fcstTime === "23시")) {
-                console.log("하루 데이터 끝");
-
+                this.todayDatas = this.todayDatas.filter(
+                  (character, idx, arr) => {
+                    return (
+                      arr.findIndex(
+                        (item) =>
+                          item.PCP === character.PCP &&
+                          item.POP === character.POP &&
+                          item.PTY === character.PTY &&
+                          item.REH === character.REH &&
+                          item.SKY === character.SKY &&
+                          item.SNO === character.SNO &&
+                          item.TMN === character.TMN &&
+                          item.TMP === character.TMP &&
+                          item.UUU === character.UUU &&
+                          item.VEC === character.VEC &&
+                          item.VVV === character.VVV &&
+                          item.WAV === character.WAV &&
+                          item.WSD === character.WSD &&
+                          item.fcstTime === character.fcstTime
+                      ) === idx
+                    );
+                  }
+                );
                 break;
               }
             }
@@ -186,8 +204,11 @@ export default {
           if (time === getWeather[i].fcstTime) {
             category = getWeather[i].category;
             fcstValue = getWeather[i].fcstValue;
-
-            if (category === "TMP") {
+            if (category === "TMN") {
+              console.log("최저기온", fcstValue);
+            } else if (category === "TMX") {
+              console.log("최저기온", fcstValue);
+            } else if (category === "TMP") {
               saveData[`${category}`] = fcstValue + "°C";
             } else if (category === "REH") {
               saveData[`${category}`] = fcstValue + "%";
@@ -214,7 +235,6 @@ export default {
               this.tomorrowDatas.push(saveData);
 
               if (this.tomorrowDatas.some((val) => val.fcstTime === "23시")) {
-                console.log("하루 데이터 끝");
                 break;
               }
             }
@@ -225,7 +245,7 @@ export default {
   },
   computed: {
     checkWeather() {
-      console.log("threeDaysTem 바뀜");
+      // console.log("threeDaysTem 바뀜");
       return this.$store.state.threeDaysTem;
     },
     checkshortWeater() {

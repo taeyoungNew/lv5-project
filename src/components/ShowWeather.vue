@@ -117,11 +117,20 @@
 <script>
 import DateComponent from "./common/DateComponent.vue";
 import { getTimeNow } from "@/api/index";
+import localCodes from "@/assets/data/localCodes.json";
 
 export default {
   components: { DateComponent },
+  props: {
+    sendAddress: {
+      type: String,
+    },
+  },
   data() {
     return {
+      days: [],
+      getAddress: "",
+      localCodes: localCodes,
       weatherIcon: 0,
       labels: ["SU", "MO", "TU", "WED", "TH", "FR", "SA"],
       daysWeek: [
@@ -153,17 +162,17 @@ export default {
         "WSD",
       ],
       forecast: [
-        {
-          day: "Tuesday",
-          icon: "mdi-white-balance-sunny",
-          temp: "24\xB0/12\xB0",
-        },
-        {
-          day: "Wednesday",
-          icon: "mdi-white-balance-sunny",
-          temp: "22\xB0/14\xB0",
-        },
-        { day: "Thursday", icon: "mdi-cloud", temp: "25\xB0/15\xB0" },
+        // {
+        //   day: "Tuesday",
+        //   icon: "mdi-white-balance-sunny",
+        //   temp: "24\xB0/12\xB0",
+        // },
+        // {
+        //   day: "Wednesday",
+        //   icon: "mdi-weather-partly-cloudy",
+        //   temp: "22\xB0/14\xB0",
+        // },
+        // { day: "Thursday", icon: "mdi-cloud", temp: "25\xB0/15\xB0" },
       ],
     };
   },
@@ -186,8 +195,16 @@ export default {
       this.windSpeed = this.nowWeather[9].obsrValue;
     },
     mediumTermForecast() {
-      let time = getTimeNow().day;
-      console.log("time = ", time);
+      let getAddress = this.getAddress;
+      let areaCode = this.localCodes.datas;
+
+      for (let i = 0; i < areaCode.length; i++) {
+        console.log(
+          getAddress.replace(/(\s*)/g, "").includes(areaCode[i].doName)
+        );
+      }
+
+      console.log("getAddress = ", this.getAddress);
     },
     showIcon(val) {
       let shortTerm = val;
@@ -204,32 +221,170 @@ export default {
       }
     },
     checkDay() {
-      let day = getTimeNow().day;
+      let day = new Date();
+      this.time = day.getDay();
+      let today = day.getDay();
+      let result = 0;
+      let index = 0;
+      for (let i = 0; i < this.daysWeek.length; i++) {
+        result = today + index;
+        if (this.daysWeek[result]) {
+          this.days.push(this.daysWeek[result]);
+        }
+        index++;
+        if (result > 5) {
+          index = 0;
+          today = 0;
+        }
+      }
+      // console.log("days = ", this.days);
+    },
+    get3DaysWeather(param) {
+      let getNowTime = getTimeNow();
+      let date = getNowTime.date;
+      let tomorrow = String(Number(date) + 1);
+      let tomAft = String(Number(date) + 2);
+      let tomSkyDatas = [];
+      let tomTmn = "";
+      let tomTmx = "";
+      let tomRain = [];
+      let dayAftSkyDatas = [];
+      let dayAftTmn = "";
+      let dayAftTmx = "";
+      let dayAftRain = [];
+      let datas = param;
+      this.forecast = [];
+      console.log(tomorrow);
+      for (let i = 0; i < datas.length; i++) {
+        if (tomorrow === datas[i].fcstDate) {
+          if ("SKY" === datas[i].category) {
+            tomSkyDatas.push(datas[i].fcstValue);
+          } else if ("TMN" === datas[i].category) {
+            tomTmn = datas[i].fcstValue;
+          } else if ("TMX" === datas[i].category) {
+            tomTmx = datas[i].fcstValue;
+          } else if ("PCP" === datas[i].category) {
+            tomRain.push(datas[i].fcstValue);
+          }
+        }
+      }
 
-      this.time = day;
+      for (let i = 0; i < datas.length; i++) {
+        if (tomAft === datas[i].fcstDate) {
+          if ("SKY" === datas[i].category) {
+            dayAftSkyDatas.push(datas[i].fcstValue);
+          } else if ("TMN" === datas[i].category) {
+            dayAftTmn = datas[i].fcstValue;
+          } else if ("TMX" === datas[i].category) {
+            dayAftTmx = datas[i].fcstValue;
+          } else if ("PCP" === datas[i].category) {
+            dayAftRain.push(datas[i].fcstValue);
+          }
+        }
+      }
+      let tomSkyMode = this.getMode(tomSkyDatas);
+      let tomRainMode = this.getMode(tomRain);
+      let dayAftSky = this.getMode(dayAftSkyDatas);
+      let dayAftRainMode = this.getMode(dayAftRain);
+      console.log(tomRainMode);
+      console.log(dayAftRainMode);
+
+      let tomIcon = "";
+      let dayAftIcon = "";
+
+      if (tomSkyMode === "1") {
+        tomIcon = "mdi-sun-wireless-outline";
+      } else if (tomSkyMode === "2") {
+        tomIcon = "mdi-sun-wireless-outline";
+      } else if (tomSkyMode === "3") {
+        tomIcon = "mdi-weather-partly-cloudy";
+      } else if (tomSkyMode === "4") {
+        tomIcon = "mdi-cloud";
+      }
+
+      if (dayAftSky === "1") {
+        dayAftIcon = "mdi-sun-wireless-outline";
+      } else if (dayAftSky === "2") {
+        dayAftIcon = "mdi-sun-wireless-outline";
+      } else if (dayAftSky === "3") {
+        dayAftIcon = "mdi-weather-partly-cloudy";
+      } else if (dayAftSky === "4") {
+        dayAftIcon = "mdi-cloud";
+      }
+
+      if (tomRainMode !== "강수없음") {
+        tomIcon = "mdi-weather-rainy";
+      }
+      if (dayAftRainMode !== "강수없음") {
+        dayAftIcon = "mdi-weather-rainy";
+      }
+
+      let tomWeather = {
+        day: this.days[1],
+        icon: tomIcon,
+        temp: `${tomTmx}\xB0/${tomTmn}\xB0`,
+      };
+
+      let dayAftWeather = {
+        day: this.days[2],
+        icon: dayAftIcon,
+        temp: `${dayAftTmx}\xB0/${dayAftTmn}\xB0`,
+      };
+      // console.log(dayAftWeather, tomWeather);
+      this.forecast.push(tomWeather, dayAftWeather);
+    },
+    getMode(array) {
+      // 1. 출연 빈도 구하기
+      const counts = array.reduce((pv, cv) => {
+        pv[cv] = (pv[cv] || 0) + 1;
+        return pv;
+      }, {});
+
+      // 2. 최빈값 구하기
+      const keys = Object.keys(counts);
+      let mode = keys[0];
+      keys.forEach((val) => {
+        if (counts[val] > counts[mode]) {
+          mode = val;
+        }
+      });
+
+      return mode;
     },
   },
   created() {
     this.checkDay();
-    this.mediumTermForecast();
   },
   computed: {
+    checkAddress() {
+      return this.sendAddress;
+    },
     checkWeather() {
       return this.$store.state.nowWeatherData;
     },
     checkShortTerm() {
       return this.$store.state.shortTermData;
     },
+    checkThreeDaysTerm() {
+      console.log("checkThreeDaysTerm");
+      return this.$store.state.threeDaysTem;
+    },
   },
 
   watch: {
+    checkAddress(val) {
+      this.getAddress = val;
+      this.mediumTermForecast();
+    },
     checkWeather(val) {
       this.getWeather = val;
       this.getWeatherdata();
     },
     checkShortTerm(val) {
-      // console.log(val.value);
       this.showIcon(val);
+    },
+    checkThreeDaysTerm(val) {
+      this.get3DaysWeather(val);
     },
   },
 };

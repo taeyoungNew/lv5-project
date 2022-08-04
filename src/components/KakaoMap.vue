@@ -1,7 +1,6 @@
 <template>
   <div>
     <div id="map"></div>
-    <!-- <img src="@/assets/data/icons/sun_icon.png" style="width: 50px" /> -->
   </div>
 </template>
 

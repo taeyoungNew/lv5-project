@@ -10,14 +10,6 @@
             hide-details="auto"
             class="search-input"
           ></v-text-field>
-          <!-- <v-text-field
-            id="keyword"
-            label="동면읍 검색"
-            hide-details="auto"
-            @input="typingData()"
-            v-model="findArea"
-            class="search-input"
-          ></v-text-field> -->
         </v-col>
         <v-col>
           <button class="search-button search-icon" @click="searchPlase()">
@@ -48,6 +40,7 @@
 import { getCoordinate } from "@/api/index";
 
 export default {
+  emits: ["stationName"],
   data() {
     return {
       findArea: "",
@@ -74,18 +67,20 @@ export default {
     placesSearchCB(data, status, pagination) {
       if (status === kakao.maps.services.Status.OK) {
         this.displayPlaces(data);
+        // 중복되는 주소를 없애기
       }
-      console.log(data, status, pagination);
+      console.log("pagination = ", pagination);
     },
     displayPlaces(places) {
       for (let i = 0; i < places.length; i++) {
-        console.log(places[i]);
+        // console.log("places = ", places[i]);
         this.getAddress.push(places[i]);
       }
     },
-    selectArea(stationName) {
+    selectArea(addressName) {
       this.getAddress = [];
-      getCoordinate(stationName);
+      this.$emit("addressName", addressName);
+      getCoordinate(addressName);
     },
 
     searchAreaInfo() {
