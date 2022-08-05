@@ -126,7 +126,6 @@ export default {
             time = "0" + time;
           }
           if (time === getWeather[i].fcstTime) {
-            console.log(time);
             category = getWeather[i].category;
             fcstValue = getWeather[i].fcstValue;
             if (category === "TMP") {
@@ -204,11 +203,7 @@ export default {
           if (time === getWeather[i].fcstTime) {
             category = getWeather[i].category;
             fcstValue = getWeather[i].fcstValue;
-            if (category === "TMN") {
-              console.log("최저기온", fcstValue);
-            } else if (category === "TMX") {
-              console.log("최저기온", fcstValue);
-            } else if (category === "TMP") {
+            if (category === "TMP") {
               saveData[`${category}`] = fcstValue + "°C";
             } else if (category === "REH") {
               saveData[`${category}`] = fcstValue + "%";

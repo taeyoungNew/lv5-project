@@ -110,17 +110,14 @@ export default {
           level: 12, // 지도의 확대 레벨
         };
       this.map = new kakao.maps.Map(mapContainer, mapOption);
-      // let map = new kakao.maps.Map(mapContainer, mapOption);
-      // changeMapType = kakao.maps.MapTypeId.TERRAIN;
-      // this.map.ddOverlayMapTypeId(changeMapType);
       kakao.maps.event.addListener(this.map, "click", function (mouseEvent) {
         // 클릭한 위도, 경도 정보를 가져옵니다
         let latlng = mouseEvent.latLng;
-        // console.log("latlng", latlng);
         const gridX = latlng.getLng();
         const gridY = latlng.getLat();
         getGridXY(gridX, gridY);
       });
+      // this.map.addOverlayMapTypeId("traffic");
     },
     sendAreaDatas() {
       mapWeatherGrids(this.sidoCoord);

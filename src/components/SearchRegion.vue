@@ -9,6 +9,7 @@
             label="주소 검색"
             hide-details="auto"
             class="search-input"
+            @keyup.enter="searchPlase()"
           ></v-text-field>
         </v-col>
         <v-col>
@@ -24,9 +25,9 @@
           v-for="(n, index) in getAddress"
           :key="index"
           outlined
-          @click="selectArea(n.address_name)"
+          @click="selectArea(n)"
         >
-          {{ n.address_name }}
+          {{ n }}
         </v-card>
       </v-col>
       <v-col>
@@ -72,10 +73,15 @@ export default {
       console.log("pagination = ", pagination);
     },
     displayPlaces(places) {
+      let getAddress = [];
       for (let i = 0; i < places.length; i++) {
-        // console.log("places = ", places[i]);
-        this.getAddress.push(places[i]);
+        this.getAddress.push(places[i].address_name);
       }
+      getAddress = this.getAddress.filter((el, index) => {
+        return this.getAddress.indexOf(el) === index;
+      });
+
+      this.getAddress = getAddress;
     },
     selectArea(addressName) {
       this.getAddress = [];
