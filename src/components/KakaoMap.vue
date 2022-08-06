@@ -5,7 +5,12 @@
 </template>
 
 <script>
-import { getGridXY, mapWeatherGrids } from "@/api/index";
+import {
+  getGridXY,
+  mapWeatherGrids,
+  searchDetailAddrFromCoords,
+  saveAddress,
+} from "@/api/index";
 import bus from "@/utils/bus.js";
 export default {
   data() {
@@ -104,21 +109,36 @@ export default {
   methods: {
     initMap() {
       // let changeMapType = "";
+      let latlng = "";
+      let detailAddr = "";
       let mapContainer = document.getElementById("map"), // 지도를 표시할 div
         mapOption = {
           center: new kakao.maps.LatLng(36.464343, 127.947613), // 지도의 중심좌표
           level: 12, // 지도의 확대 레벨
         };
+
       this.map = new kakao.maps.Map(mapContainer, mapOption);
       kakao.maps.event.addListener(this.map, "click", function (mouseEvent) {
         // 클릭한 위도, 경도 정보를 가져옵니다
-        let latlng = mouseEvent.latLng;
+        latlng = mouseEvent.latLng;
         const gridX = latlng.getLng();
         const gridY = latlng.getLat();
         bus.$emit("start:spinner");
         getGridXY(gridX, gridY);
+
+        // 좌표로 주소얻기
+        searchDetailAddrFromCoords(
+          mouseEvent.latLng,
+          function (result, status) {
+            if (status === kakao.maps.services.Status.OK) {
+              detailAddr = result[0].address.address_name;
+            }
+            console.log("detailAddr = ", detailAddr);
+            saveAddress(detailAddr);
+          }
+        );
       });
-      // this.map.addOverlayMapTypeId("traffic");
+      this.$store.dispatch("GET_ADDRESS", detailAddr);
     },
     sendAreaDatas() {
       mapWeatherGrids(this.sidoCoord);

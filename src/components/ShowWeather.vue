@@ -1,9 +1,6 @@
 <template>
-  <v-card>
-    <v-list-item>
-      <v-list-item-subtitle><date-component /></v-list-item-subtitle>
-    </v-list-item>
-
+  <v-card outlined>
+    <v-list-item> </v-list-item>
     <v-card-text>
       <v-row align="center">
         <v-col class="text-center" id="nowWeather">
@@ -111,12 +108,12 @@
 </template>
 
 <script>
-import DateComponent from "./common/DateComponent.vue";
+// import DateComponent from "./common/DateComponent.vue";
 import { getTimeNow } from "@/api/index";
 import localCodes from "@/assets/data/localCodes.json";
 
 export default {
-  components: { DateComponent },
+  components: {},
   props: {
     sendAddress: {
       type: String,
@@ -125,7 +122,7 @@ export default {
   data() {
     return {
       days: [],
-      getAddress: "",
+
       localCodes: localCodes,
       weatherIcon: 0,
       labels: ["SU", "MO", "TU", "WED", "TH", "FR", "SA"],
@@ -190,18 +187,18 @@ export default {
       this.humidityPersent = this.nowWeather[5].obsrValue;
       this.windSpeed = this.nowWeather[9].obsrValue;
     },
-    mediumTermForecast() {
-      let getAddress = this.getAddress;
-      let areaCode = this.localCodes.datas;
+    // mediumTermForecast() {
+    //   let getAddress = this.getAddress;
+    //   let areaCode = this.localCodes.datas;
 
-      for (let i = 0; i < areaCode.length; i++) {
-        console.log(
-          getAddress.replace(/(\s*)/g, "").includes(areaCode[i].doName)
-        );
-      }
+    //   for (let i = 0; i < areaCode.length; i++) {
+    //     console.log(
+    //       getAddress.replace(/(\s*)/g, "").includes(areaCode[i].doName)
+    //     );
+    //   }
 
-      console.log("getAddress = ", this.getAddress);
-    },
+    //   console.log("getAddress = ", this.getAddress);
+    // },
     showIcon(val) {
       let shortTerm = val;
       let nowTime = getTimeNow().hours;
@@ -250,7 +247,6 @@ export default {
       let dayAftRain = [];
       let datas = param;
       this.forecast = [];
-      console.log(tomorrow);
       for (let i = 0; i < datas.length; i++) {
         if (tomorrow === datas[i].fcstDate) {
           if ("SKY" === datas[i].category) {
@@ -282,8 +278,6 @@ export default {
       let tomRainMode = this.getMode(tomRain);
       let dayAftSky = this.getMode(dayAftSkyDatas);
       let dayAftRainMode = this.getMode(dayAftRain);
-      // console.log(tomRainMode);
-      // console.log(dayAftRainMode);
 
       let tomIcon = "";
       let dayAftIcon = "";
@@ -352,9 +346,6 @@ export default {
     this.checkDay();
   },
   computed: {
-    checkAddress() {
-      return this.sendAddress;
-    },
     checkWeather() {
       return this.$store.state.nowWeatherData;
     },
@@ -364,13 +355,12 @@ export default {
     checkThreeDaysTerm() {
       return this.$store.state.threeDaysTem;
     },
+    // getAddress() {
+    //   return this.$store.state.getAddress;
+    // },
   },
 
   watch: {
-    checkAddress(val) {
-      this.getAddress = val;
-      this.mediumTermForecast();
-    },
     checkWeather(val) {
       this.getWeather = val;
       this.getWeatherdata();

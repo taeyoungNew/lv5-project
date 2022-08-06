@@ -25,6 +25,16 @@ const restApiKey = "db3b40e1abc54e54f8831b2258beeba4";
 const tmServiceKey =
   "UkRbyOIUcZ8nSFUYHH4gbSjw2NPG0hjOkLMa8fUlkNpnstI7CbHORuOta%2BI8WusIGFq9AgdYa2vOaCeIYTi%2Bpw%3D%3D";
 
+function searchDetailAddrFromCoords(coords, callback) {
+  let geocoder = new kakao.maps.services.Geocoder();
+  geocoder.coord2Address(coords.getLng(), coords.getLat(), callback);
+}
+
+function saveAddress(param) {
+  // console.log(param);
+  store.dispatch("GET_ADDRESS", param);
+}
+
 function createInstance() {
   return axios.create({
     baseURL: process.env.VUE_APP_API_URL,
@@ -447,7 +457,7 @@ function sysPaddingZro(lnum, mydpt) {
 }
 setInterval(() => {
   getTimeNow();
-}, 1000);
+}, 5000);
 
 export const instance = createInstance();
 export {
@@ -462,4 +472,6 @@ export {
   getNowTerm,
   getShortTerm,
   threeDaysWeather,
+  searchDetailAddrFromCoords,
+  saveAddress,
 };

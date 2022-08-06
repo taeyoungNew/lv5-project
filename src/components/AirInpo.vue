@@ -1,12 +1,14 @@
 <template>
   <v-container>
     <v-row>
-      <v-col v-if="detailDatas === null">
-        <v-card class="pa-3"> 지역을 검색해주세요 </v-card>
-      </v-col>
-      <v-row v-else no-gutters>
+      <v-row v-if="detailDatas === null" no-gutters>
+        <v-col>
+          <v-card class="pa-3" outlined> 지역을 검색해주세요 </v-card>
+        </v-col>
+      </v-row>
+      <v-row v-else>
         <v-col class="data-box" v-for="(n, index) in detailDatas" :key="index">
-          <v-card>
+          <v-card class="pt-3" outlined>
             <font-awesome-icon
               class="grade-icon"
               v-if="n.dataGrade === '1'"

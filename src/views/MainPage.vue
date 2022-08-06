@@ -13,6 +13,12 @@
             </v-card>
           </v-col>
           <v-col>
+            <v-card class="pa-3" outlined>
+              <v-card-text v-if="getAddress" style="font-size: 25px">{{
+                getAddress
+              }}</v-card-text>
+              <v-card-text v-else style="font-size: 25px">주소</v-card-text>
+            </v-card>
             <v-card class="pa-3" outlined
               ><show-weather :sendAddress="addressName"
             /></v-card>
@@ -53,6 +59,7 @@ export default {
   },
   data() {
     return {
+      getAddress: "",
       addressName: "",
       loadingStatus: false,
     };
@@ -80,12 +87,24 @@ export default {
       this.$store.dispatch("FETCH_DATAS", this.$store.state.defaultSerch);
     },
   },
+  computed: {
+    checkAddress() {
+      return this.$store.state.address;
+    },
+  },
+  watch: {
+    checkAddress(val) {
+      this.getAddress = val;
+    },
+  },
 };
 </script>
 
 <style lang="scss" scoped>
 .containerBox {
   height: 100vmin;
+  // background-image: url("https://img.freepik.com/free-vector/gorgeous-clouds-background-with-blue-sky-design_1017-25501.jpg?w=1800&t=st=1659817902~exp=1659818502~hmac=1ebf122c1b942c2bb75522604b4473bb622bf0c8b9384d13db8807d663dd2e84");
+  // background-size: cover;
 }
 #main {
   position: relative;

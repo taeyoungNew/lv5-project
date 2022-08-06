@@ -57,6 +57,7 @@ export default new Vuex.Store({
   },
   actions: {
     GET_ADDRESS(context, param) {
+      console.log("param = ", param);
       context.commit("SAVE_SEARCH_ADDRESS", param);
     },
     GET_PRE_TIME(context) {
