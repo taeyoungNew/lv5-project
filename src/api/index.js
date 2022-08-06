@@ -117,9 +117,6 @@ async function getShortTerm(params) {
           temVal = srtTemNcst[tDataNum].obsrValue;
           rainDataNum = srtTemNcst.findIndex((x) => x.category === "RN1");
           rainVal = srtTemNcst[rainDataNum].obsrValue;
-          // console.log("rainDataNum = ", rainDataNum);
-          // console.log("rainVal = ", rainVal);
-          // console.log("srtTemNcst = ", srtTemNcst);
         })
         .catch(function (error) {
           console.log(error);

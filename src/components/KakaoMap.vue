@@ -6,7 +6,7 @@
 
 <script>
 import { getGridXY, mapWeatherGrids } from "@/api/index";
-// import cord from "@/assets/data/localCoordinates.json";
+import bus from "@/utils/bus.js";
 export default {
   data() {
     return {
@@ -115,6 +115,7 @@ export default {
         let latlng = mouseEvent.latLng;
         const gridX = latlng.getLng();
         const gridY = latlng.getLat();
+        bus.$emit("start:spinner");
         getGridXY(gridX, gridY);
       });
       // this.map.addOverlayMapTypeId("traffic");
@@ -156,10 +157,12 @@ export default {
         });
         customOverlay.setMap(map);
       }
+      bus.$emit("end:spinner");
     },
   },
-  created() {
-    this.sendAreaDatas();
+  async created() {
+    bus.$emit("start:spinner");
+    await this.sendAreaDatas();
   },
   computed: {
     checkmapWeather() {

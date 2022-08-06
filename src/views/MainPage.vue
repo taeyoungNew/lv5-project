@@ -1,5 +1,6 @@
 <template>
-  <v-container>
+  <v-container class="containerBox" ref="containerBox">
+    <spinner-component v-if="loadingStatus" class="layerPopup" />
     <v-card
       ><search-region @addressName="getAddressName" style="max-height: 70px"
     /></v-card>
@@ -38,48 +39,63 @@ import AirInpo from "@/components/AirInpo.vue";
 import SearchRegion from "@/components/SearchRegion.vue";
 import ShowWeather from "@/components/ShowWeather.vue";
 import ShortTerm from "@/components/ShortTerm.vue";
+import SpinnerComponent from "@/components/common/SpinnerComponent.vue";
+import bus from "@/utils/bus.js";
 
 export default {
-  components: { KakaoMap, AirInpo, SearchRegion, ShowWeather, ShortTerm },
+  components: {
+    KakaoMap,
+    AirInpo,
+    SearchRegion,
+    ShowWeather,
+    ShortTerm,
+    SpinnerComponent,
+  },
   data() {
     return {
       addressName: "",
+      loadingStatus: false,
     };
   },
   created() {
+    bus.$on("start:spinner", this.startSpinner);
     this.fetchData();
+    bus.$on("end:spinner", this.endSpinner);
+  },
+  beforeDestroy() {
+    bus.$off("start:spinner", this.startSpinner);
+    bus.$off("end:spinner", this.endSpinner);
   },
   methods: {
+    startSpinner() {
+      this.loadingStatus = true;
+    },
+    endSpinner() {
+      this.loadingStatus = false;
+    },
     getAddressName(params) {
-      // console.log("params = ", params);
       this.addressName = params;
-      // alert("받음");
     },
     fetchData() {
       this.$store.dispatch("FETCH_DATAS", this.$store.state.defaultSerch);
     },
   },
-  watch: {
-    loader() {
-      const load = this.loader;
-      this[load] = !this[load];
-
-      setTimeout(() => (this[load] = false), 3000);
-
-      this.loader = null;
-    },
-  },
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.containerBox {
+  height: 100vmin;
+}
 #main {
   position: relative;
 }
-
-.search-com {
-  margin-top: 25%;
+.container-box {
   width: 100%;
-  height: 100vh;
+  height: 100%;
+  left: 0px;
+  top: 0px;
+  background: #fff;
 }
 </style>
+scoped>

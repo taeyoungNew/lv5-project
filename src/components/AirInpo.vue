@@ -35,7 +35,7 @@
             />
             <font-awesome-icon
               class="grade-icon"
-              v-if="n.dataGrade === null || n.dataGrade === ''"
+              v-if="n.dataGrade === null || n.dataValue === ''"
               icon="fa-regular fa-face-meh"
             />
 
