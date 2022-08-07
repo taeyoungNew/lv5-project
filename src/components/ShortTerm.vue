@@ -33,6 +33,7 @@
 
 <script>
 import { getTimeNow } from "@/api/index";
+import bus from "@/utils/bus.js";
 export default {
   data: () => ({
     btnOneColor: "primary",
@@ -240,7 +241,6 @@ export default {
   },
   computed: {
     checkWeather() {
-      // console.log("threeDaysTem 바뀜");
       return this.$store.state.threeDaysTem;
     },
     checkshortWeater() {
@@ -253,6 +253,7 @@ export default {
       this.getWeather = val;
 
       this.getWeatherData();
+      bus.$emit("end:spinner");
     },
     checkshortWeater(val) {
       this.shortTermData = val;

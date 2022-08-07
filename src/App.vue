@@ -1,6 +1,5 @@
 <template>
   <v-app id="app">
-    <!-- <app-header /> -->
     <v-main>
       <v-container>
         <router-view />
@@ -10,9 +9,6 @@
 </template>
 
 <script>
-// import AppHeader from "./components/common/AppHeader.vue";
-
-// import AppHeader from "./components/common/AppHeader.vue";
 export default {
   name: "App",
   components: {},
@@ -24,5 +20,9 @@ export default {
   width: 100%;
   margin: 0 auto;
   height: auto;
+}
+.v-progress-circular {
+  margin: 1rem;
+  width: 100%;
 }
 </style>

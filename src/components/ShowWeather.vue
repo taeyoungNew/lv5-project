@@ -107,10 +107,6 @@
     </v-list>
 
     <v-divider></v-divider>
-
-    <!-- <v-card-actions>
-      <v-btn text> Full Report </v-btn>
-    </v-card-actions> -->
   </v-card>
 </template>
 
@@ -286,8 +282,8 @@ export default {
       let tomRainMode = this.getMode(tomRain);
       let dayAftSky = this.getMode(dayAftSkyDatas);
       let dayAftRainMode = this.getMode(dayAftRain);
-      console.log(tomRainMode);
-      console.log(dayAftRainMode);
+      // console.log(tomRainMode);
+      // console.log(dayAftRainMode);
 
       let tomIcon = "";
       let dayAftIcon = "";
@@ -366,7 +362,6 @@ export default {
       return this.$store.state.shortTermData;
     },
     checkThreeDaysTerm() {
-      console.log("checkThreeDaysTerm");
       return this.$store.state.threeDaysTem;
     },
   },

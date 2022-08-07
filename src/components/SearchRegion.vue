@@ -39,7 +39,7 @@
 
 <script>
 import { getCoordinate } from "@/api/index";
-
+import bus from "@/utils/bus.js";
 export default {
   emits: ["stationName"],
   data() {
@@ -68,7 +68,6 @@ export default {
     placesSearchCB(data, status, pagination) {
       if (status === kakao.maps.services.Status.OK) {
         this.displayPlaces(data);
-        // 중복되는 주소를 없애기
       }
       console.log("pagination = ", pagination);
     },
@@ -87,6 +86,8 @@ export default {
       this.getAddress = [];
       this.$emit("addressName", addressName);
       getCoordinate(addressName);
+      bus.$emit("start:spinner");
+      this.$store.dispatch("GET_ADDRESS", addressName);
     },
 
     searchAreaInfo() {
@@ -105,7 +106,6 @@ export default {
       console.log("주소찾기");
       this.$store.dispatch("SEARCH_DATA_NUM", dataNum);
       if (this.$store.state.findAreaData) {
-        // this.$router.push("weather-page");
         console.log("주소를 찾았어요");
       } else {
         if (this.findArea === "") {
@@ -115,59 +115,6 @@ export default {
         }
       }
     },
-    typingData() {
-      // const airDatas = this.$store.state.airDatas;
-      // for (let i = 0; i < airDatas.length; i++) {
-      //   airDatas[i].sidoStation =
-      //     airDatas[i].sidoName + airDatas[i].stationName;
-      // }
-      // let getAddress = [];
-      // const searchArea = airDatas.some(
-      //   (val) =>
-      //     val.sidoName.includes(this.findArea.replace(/(\s*)/g, "")) ||
-      //     val.stationName.includes(this.findArea.replace(/(\s*)/g, "")) ||
-      //     val.sidoStation.includes(this.findArea.replace(/(\s*)/g, ""))
-      // );
-      // if (searchArea) {
-      //   for (let i = 0; i < airDatas.length; i++) {
-      //     if (
-      //       airDatas[i].sidoName.includes(
-      //         this.findArea.replace(/(\s*)/g, "")
-      //       ) ||
-      //       airDatas[i].stationName.includes(
-      //         this.findArea.replace(/(\s*)/g, "")
-      //       ) ||
-      //       airDatas[i].sidoStation.includes(
-      //         this.findArea.replace(/(\s*)/g, "")
-      //       )
-      //     ) {
-      //       getAddress.push({
-      //         sidoName: airDatas[i].sidoName,
-      //         stationName: airDatas[i].stationName,
-      //         sidoStation: airDatas[i].sidoName + airDatas[i].stationName,
-      //       });
-      //       // console.log("getAddress = ", getAddress);
-      //       this.getAddress = getAddress;
-      //     }
-      //   }
-      // } else {
-      //   // console.log("데이터가 없습니다ㅜ");
-      //   this.getAddress = "";
-      // }
-      // if (this.findArea === "") {
-      //   this.getAddress = "";
-      // }
-    },
-    // computed: {
-    //   checkTextBox() {
-    //     return this.getAddress;
-    //   },
-    // },
-    // watch: {
-    //   checkTextBox(val) {
-    //     console.log(val);
-    //   },
-    // },
   },
 };
 </script>
@@ -196,21 +143,6 @@ export default {
   font-weight: 400;
 }
 
-/* input {
-  border: none;
-  border-radius: 10px;
-  width: 300px;
-  height: 40px;
-  font-size: 30px;
-  font-weight: 700;
-  text-align: center;
-  background-color: #00b4d8;
-  color: #caf0f8;
-}
-
-input:focus {
-  outline: none;
-} */
 .material-icons {
   font-size: 40px;
 }

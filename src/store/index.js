@@ -13,6 +13,7 @@ Vue.config.devtools = true;
 
 export default new Vuex.Store({
   state: {
+    address: "",
     defaultSerch: "전국",
     airDatas: [],
     findAreaData: "",
@@ -25,6 +26,9 @@ export default new Vuex.Store({
     gridY: "",
   },
   mutations: {
+    SAVE_SEARCH_ADDRESS(state, param) {
+      state.address = param;
+    },
     SAVE_PRE_TIME(state, param) {
       state.presentTime = param;
     },
@@ -52,7 +56,10 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    getPreTime(context) {
+    GET_ADDRESS(context, param) {
+      context.commit("SAVE_SEARCH_ADDRESS", param);
+    },
+    GET_PRE_TIME(context) {
       let preTime = getTimeNow();
       context.commit("SAVE_PRE_TIME", preTime);
     },
