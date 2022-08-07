@@ -1,6 +1,8 @@
 <template>
   <v-container>
-    <v-card><search-region style="max-height: 70px" /></v-card>
+    <v-card
+      ><search-region @addressName="getAddressName" style="max-height: 70px"
+    /></v-card>
     <v-card>
       <v-container class="grey lighten-3">
         <v-row style="position: relative">
@@ -10,7 +12,9 @@
             </v-card>
           </v-col>
           <v-col>
-            <v-card class="pa-3" outlined><show-weather /></v-card>
+            <v-card class="pa-3" outlined
+              ><show-weather :sendAddress="addressName"
+            /></v-card>
             <v-card class="pa-3" outlined>
               <air-inpo />
             </v-card>
@@ -37,11 +41,20 @@ import ShortTerm from "@/components/ShortTerm.vue";
 
 export default {
   components: { KakaoMap, AirInpo, SearchRegion, ShowWeather, ShortTerm },
-
+  data() {
+    return {
+      addressName: "",
+    };
+  },
   created() {
     this.fetchData();
   },
   methods: {
+    getAddressName(params) {
+      // console.log("params = ", params);
+      this.addressName = params;
+      // alert("받음");
+    },
     fetchData() {
       this.$store.dispatch("FETCH_DATAS", this.$store.state.defaultSerch);
     },

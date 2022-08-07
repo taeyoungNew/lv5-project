@@ -9,15 +9,8 @@
             label="주소 검색"
             hide-details="auto"
             class="search-input"
+            @keyup.enter="searchPlase()"
           ></v-text-field>
-          <!-- <v-text-field
-            id="keyword"
-            label="동면읍 검색"
-            hide-details="auto"
-            @input="typingData()"
-            v-model="findArea"
-            class="search-input"
-          ></v-text-field> -->
         </v-col>
         <v-col>
           <button class="search-button search-icon" @click="searchPlase()">
@@ -32,9 +25,9 @@
           v-for="(n, index) in getAddress"
           :key="index"
           outlined
-          @click="selectArea(n.address_name)"
+          @click="selectArea(n)"
         >
-          {{ n.address_name }}
+          {{ n }}
         </v-card>
       </v-col>
       <v-col>
@@ -48,6 +41,7 @@
 import { getCoordinate } from "@/api/index";
 
 export default {
+  emits: ["stationName"],
   data() {
     return {
       findArea: "",
@@ -74,18 +68,25 @@ export default {
     placesSearchCB(data, status, pagination) {
       if (status === kakao.maps.services.Status.OK) {
         this.displayPlaces(data);
+        // 중복되는 주소를 없애기
       }
-      console.log(data, status, pagination);
+      console.log("pagination = ", pagination);
     },
     displayPlaces(places) {
+      let getAddress = [];
       for (let i = 0; i < places.length; i++) {
-        console.log(places[i]);
-        this.getAddress.push(places[i]);
+        this.getAddress.push(places[i].address_name);
       }
+      getAddress = this.getAddress.filter((el, index) => {
+        return this.getAddress.indexOf(el) === index;
+      });
+
+      this.getAddress = getAddress;
     },
-    selectArea(stationName) {
+    selectArea(addressName) {
       this.getAddress = [];
-      getCoordinate(stationName);
+      this.$emit("addressName", addressName);
+      getCoordinate(addressName);
     },
 
     searchAreaInfo() {

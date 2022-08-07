@@ -175,7 +175,6 @@ function threeDaysWeather() {
   } else {
     getNow = String(getNow);
   }
-  console.log("getNow", getNow);
 
   if (fetchTimes.includes(getNow)) {
     return axios.get(
