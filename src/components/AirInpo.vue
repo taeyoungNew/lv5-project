@@ -135,4 +135,8 @@ export default {
   text-align: center;
   display: inline-block;
 }
+.grades-message {
+  padding-top: 10px;
+  margin-bottom: 0;
+}
 </style>

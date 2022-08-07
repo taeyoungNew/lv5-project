@@ -16,6 +16,7 @@ import {
   faWind,
   faTemperatureHalf,
   faDroplet,
+  faLocationDot,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faFaceGrinSquint,
@@ -47,7 +48,8 @@ library.add(
   faMoon,
   faWind,
   faTemperatureHalf,
-  faDroplet
+  faDroplet,
+  faLocationDot
 );
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 

@@ -90,31 +90,31 @@ export default {
       this.$store.dispatch("GET_ADDRESS", addressName);
     },
 
-    searchAreaInfo() {
-      let airDatas = this.$store.state.airDatas;
-      for (let i = 0; i < airDatas.length; i++) {
-        airDatas[i].sidoStation =
-          airDatas[i].sidoName + airDatas[i].stationName;
-      }
+    // searchAreaInfo() {
+    //   let airDatas = this.$store.state.airDatas;
+    //   for (let i = 0; i < airDatas.length; i++) {
+    //     airDatas[i].sidoStation =
+    //       airDatas[i].sidoName + airDatas[i].stationName;
+    //   }
 
-      const dataNum = airDatas.findIndex(
-        (x) =>
-          x.sidoName === this.findArea.replace(/(\s*)/g, "") ||
-          x.stationName === this.findArea.replace(/(\s*)/g, "") ||
-          x.sidoStation === this.findArea.replace(/(\s*)/g, "")
-      );
-      console.log("주소찾기");
-      this.$store.dispatch("SEARCH_DATA_NUM", dataNum);
-      if (this.$store.state.findAreaData) {
-        console.log("주소를 찾았어요");
-      } else {
-        if (this.findArea === "") {
-          alert("주소를 검색해주세요");
-        } else if (this.$store.state.findAreaData === undefined) {
-          alert("데이터를 찾지 못하였습니다-");
-        }
-      }
-    },
+    //   const dataNum = airDatas.findIndex(
+    //     (x) =>
+    //       x.sidoName === this.findArea.replace(/(\s*)/g, "") ||
+    //       x.stationName === this.findArea.replace(/(\s*)/g, "") ||
+    //       x.sidoStation === this.findArea.replace(/(\s*)/g, "")
+    //   );
+    //   console.log("주소찾기");
+    //   this.$store.dispatch("SEARCH_DATA_NUM", dataNum);
+    //   if (this.$store.state.findAreaData) {
+    //     console.log("주소를 찾았어요");
+    //   } else {
+    //     if (this.findArea === "") {
+    //       alert("주소를 검색해주세요");
+    //     } else if (this.$store.state.findAreaData === undefined) {
+    //       alert("데이터를 찾지 못하였습니다-");
+    //     }
+    //   }
+    // },
   },
 };
 </script>

@@ -7,22 +7,12 @@
 </template>
 
 <script>
-export default {
-  // mounted() {
-  //   this.getHeight();
-  // },
-  // methods: {
-  //   getHeight() {
-  //     let height = this.$refs.containerBox;
-  //     console.log("height = ", height);
-  //   },
-  // },
-};
+export default {};
 </script>
 
 <style scoped>
 .v-progress-circular {
-  margin: 1rem;
+  margin: 3rem;
 }
 .layerPopup {
   position: fixed;

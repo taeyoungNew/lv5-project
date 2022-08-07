@@ -1,11 +1,11 @@
 <template>
   <v-container class="containerBox" ref="containerBox">
-    <spinner-component v-if="loadingStatus" class="layerPopup" />
+    <spinner-component v-if="loadingStatus" />
     <v-card
       ><search-region @addressName="getAddressName" style="max-height: 70px"
     /></v-card>
     <v-card>
-      <v-container class="grey lighten-3">
+      <v-container class="lighten-3">
         <v-row style="position: relative">
           <v-col xl="7" lg="12" md="12" sm="12" xm="12">
             <v-card outlined>
@@ -14,10 +14,14 @@
           </v-col>
           <v-col>
             <v-card class="pa-3" outlined>
-              <v-card-text v-if="getAddress" style="font-size: 25px">{{
-                getAddress
-              }}</v-card-text>
-              <v-card-text v-else style="font-size: 25px">주소</v-card-text>
+              <v-row>
+                <v-col>
+                  <v-card-text v-if="getAddress" style="font-size: 25px">
+                    {{ getAddress }}
+                  </v-card-text>
+                  <v-card-text v-else style="font-size: 25px">주소</v-card-text>
+                </v-col>
+              </v-row>
             </v-card>
             <v-card class="pa-3" outlined
               ><show-weather :sendAddress="addressName"
@@ -114,7 +118,7 @@ export default {
   height: 100%;
   left: 0px;
   top: 0px;
-  background: #fff;
+  // background: #fff;
 }
 </style>
 scoped>

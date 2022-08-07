@@ -104,16 +104,16 @@ async function getShortTerm(params) {
 
   // params로 넘어 온 값이 있으면 아래의 코드 실행
   if (params) {
-    // console.log("params = ", params);
     let gridXY = params;
     let dataList = [];
     let rainDataNum = "";
     let tDataNum = "";
 
     let skyDataNum = "";
-    // let selectList = [];
+
     let srtTemNcst = "";
     let srtTemFcst = "";
+    console.log(getDate, resultTime);
     for (let i = 0; i < gridXY.length; i++) {
       // 초단기실황
       await axios
@@ -141,8 +141,6 @@ async function getShortTerm(params) {
           srtTemFcst = res.data.response.body.items.item;
           skyDataNum = srtTemFcst.findIndex((x) => x.category === "SKY");
           skyVal = srtTemFcst[skyDataNum].fcstValue;
-          // console.log("skyVal", skyVal);
-          // console.log("rainVal", rainVal);
         })
         .catch(function (error) {
           console.log(error);
@@ -168,15 +166,14 @@ async function getShortTerm(params) {
 }
 
 function threeDaysWeather() {
-  // let getTimeHours = getTimeHours;
   let mycurrentDate = new Date();
   let getNow = mycurrentDate.getHours();
-  // let dataNum = "";
+
   let near = 0;
   let abs = 0;
   let min = 1000;
   const target = [2, 5, 8, 11, 14, 17, 20, 23];
-  // getNow = ;
+
   if (getNow < 10) {
     getNow = String(getNow);
   } else {
@@ -223,7 +220,6 @@ function threeDaysWeather() {
       }
     }
   }
-  // console.log(dataNum);
 }
 
 function getGridXY(getLng, getLat) {
