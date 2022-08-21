@@ -26,7 +26,8 @@ export default {
 
       message: "",
       map: "",
-      appkey: "41559690bf91cc5e8d8acc64f8d3a36f",
+      webAppKey: "0462373a9ceafbd0567d71523365118e",
+      // appkey: "41559690bf91cc5e8d8acc64f8d3a36f",
       sidoCoord: [
         {
           sidoName: "서울",
@@ -101,7 +102,7 @@ export default {
       const script = document.createElement("script");
       /* global kakao */
       script.onload = () => kakao.maps.load(this.initMap);
-      script.src = `http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${this.appkey}&libraries=services,clusterer,drawing`;
+      script.src = `http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${this.webAppKey}&libraries=services,clusterer,drawing`;
       document.head.appendChild(script);
     }
     // 지도를 표시할 div
