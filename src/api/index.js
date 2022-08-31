@@ -55,12 +55,13 @@ function fetchData(param) {
 
 function findMetStation() {
   return axios.get(
-    `http://apis.data.go.kr/B552584/MsrstnInfoInqireSvc/getNearbyMsrstnList?tmX=244148.546388&tmY=412423.75772&returnType=json&serviceKey=${serviceKey}`
+    `/B552584/MsrstnInfoInqireSvc/getNearbyMsrstnList?tmX=244148.546388&tmY=412423.75772&returnType=json&serviceKey=${serviceKey}`
   );
 }
 // getShortTermForecast
 // fetchWeatherData
 function getNowTerm() {
+  console.log("초단기실황");
   // 초단기실황
   let hour = getTimeHours;
   let minutes = getTimeMinutes;
@@ -113,7 +114,6 @@ async function getShortTerm(params) {
 
     let srtTemNcst = "";
     let srtTemFcst = "";
-    console.log(getDate, resultTime);
     for (let i = 0; i < gridXY.length; i++) {
       // 초단기실황
       await axios
@@ -334,7 +334,7 @@ function changeTmCoord(x, y) {
   // console.log("x", x, "y", y);
   axios
     .get(
-      `https://dapi.kakao.com/v2/local/geo/transcoord.json?x=${x}&y=${y}&input_coord=WGS84&output_coord=TM`,
+      `http://dapi.kakao.com/v2/local/geo/transcoord.json?x=${x}&y=${y}&input_coord=WGS84&output_coord=TM`,
       {
         headers: {
           Authorization: `KakaoAK ${restApiKey}`,
@@ -404,16 +404,12 @@ function getCoordinate(params) {
 
 function getTimeNow() {
   let mycurrentDate = new Date();
-
-  // console.log("month = ", mycurrentDate.getMonth());
-  // console.log("date = ", mycurrentDate.getDate());
   let date =
     sysPaddingZro(mycurrentDate.getFullYear(), 4) +
     "0" +
     +sysPaddingZro(mycurrentDate.getMonth() + 1, 2) +
     sysPaddingZro(mycurrentDate.getDate(), 2);
 
-  // console.log("date", date);
   let hours = "";
   if (mycurrentDate.getHours() < 10) {
     hours = "0" + mycurrentDate.getHours();
@@ -451,9 +447,9 @@ function sysPaddingZro(lnum, mydpt) {
   // console.log((clckzro + lnum).slice(-mydpt));
   return (clckzro + lnum).slice(-mydpt);
 }
-setInterval(() => {
-  getTimeNow();
-}, 5000);
+// setInterval(() => {
+//   getTimeNow();
+// }, 5000);
 
 export const instance = createInstance();
 export {

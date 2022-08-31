@@ -95,8 +95,7 @@ export default {
     // isLoading() {
     //   this.loadingStatus = !this.loadingStatus;
     // },
-    async getWeatherData() {
-      console.log("getWeatherData호출");
+    getWeatherData() {
       this.todayDatas = [];
       this.tomorrowDatas = [];
       // let shortTerm = this.shortTerm;
@@ -198,58 +197,11 @@ export default {
             );
           });
         });
-        // for (let i = 0; i < shortTerm.length; i++) {
-        //   if (date === shortTerm[i].fcstDate) {
-        //     if (time === shortTerm[i].fcstTime) {
-        //       category = shortTerm[i].category;
-        //       fcstValue = shortTerm[i].fcstValue;
-        //       if (category === "T1H") {
-        //         // 기온
-        //         saveData[`TMP`] = fcstValue + "°C";
-        //       } else if (category === "REH") {
-        //         // 습도
-        //         saveData[`${category}`] = fcstValue + "%";
-        //       } else if (category === "WSD") {
-        //         // 풍속
-        //         saveData[`${category}`] = fcstValue + "m/s";
-        //       } else if (category === "SKY") {
-        //         // 하늘상태
-        //         if (fcstValue == 1) {
-        //           saveData[`${category}`] = "맑음";
-        //         } else if (fcstValue == 2) {
-        //           saveData[`${category}`] = "맑음";
-        //         } else if (fcstValue == 3) {
-        //           saveData[`${category}`] = "구름 많음";
-        //         } else if (fcstValue == 4) {
-        //           saveData[`${category}`] = "흐림";
-        //         }
-        //       } else if (category === "RN1") {
-        //         if (fcstValue === "강수없음") {
-        //           saveData[`PCP`] = fcstValue;
-        //         } else {
-        //           saveData[`PCP`] = fcstValue + "mm";
-        //         }
-        //       } else {
-        //         // 그 외의 데이터
-        //         saveData[`${category}`] = fcstValue;
-        //       }
-        //       if (Object.keys(saveData).length > 9) {
-        //         saveData["fcstTime"] =
-        //           shortTerm[i].fcstTime.substring(0, 2) + "시";
-        //         this.todayDatas.push(saveData);
-        //         continue;
-        //       }
-        //     }
-        //   }
-        // }
       } else if (checkData === undefined) {
         // map으로 단기예보 저장
-
         threeDaysTem.map((x) => {
           if (x.fcstDate === date) {
             if (x.fcstTime === time) {
-              console.log(x.fcstTime);
-
               category = x.category;
               fcstValue = x.fcstValue;
               if (category === "TMP") {
@@ -297,72 +249,11 @@ export default {
             );
           });
         });
-        // 초단기예보 저장한 후 단기예보 저장
-        // for (let i = 0; i < threeDaysTem.length; i++) {
-        //   if (date === threeDaysTem[i].fcstDate) {
-        //     if (time === threeDaysTem[i].fcstTime) {
-        //       category = threeDaysTem[i].category;
-        //       fcstValue = threeDaysTem[i].fcstValue;
-        //       if (category === "TMP") {
-        //         saveData[`${category}`] = fcstValue + "°C";
-        //       } else if (category === "REH") {
-        //         saveData[`${category}`] = fcstValue + "%";
-        //       } else if (category === "WSD") {
-        //         saveData[`${category}`] = fcstValue + "m/s";
-        //       } else if (category === "SKY") {
-        //         if (fcstValue == 1) {
-        //           saveData[`${category}`] = "맑음";
-        //         } else if (fcstValue == 2) {
-        //           saveData[`${category}`] = "맑음";
-        //         } else if (fcstValue == 3) {
-        //           saveData[`${category}`] = "구름 많음";
-        //         } else if (fcstValue == 4) {
-        //           saveData[`${category}`] = "흐림";
-        //         }
-        //       } else {
-        //         saveData[`${category}`] = fcstValue;
-        //       }
-
-        //       if (Object.keys(saveData).length > 11) {
-        //         saveData["fcstTime"] =
-        //           threeDaysTem[i].fcstTime.substring(0, 2) + "시";
-
-        //         this.todayDatas.push(saveData);
-
-        //         if (this.todayDatas.some((val) => val.fcstTime === "23시")) {
-        //           this.todayDatas = this.todayDatas.filter(
-        //             (character, idx, arr) => {
-        //               return (
-        //                 arr.findIndex(
-        //                   (item) =>
-        //                     item.PCP === character.PCP &&
-        //                     item.POP === character.POP &&
-        //                     item.PTY === character.PTY &&
-        //                     item.REH === character.REH &&
-        //                     item.SKY === character.SKY &&
-        //                     item.SNO === character.SNO &&
-        //                     item.TMN === character.TMN &&
-        //                     item.TMP === character.TMP &&
-        //                     item.UUU === character.UUU &&
-        //                     item.VEC === character.VEC &&
-        //                     item.VVV === character.VVV &&
-        //                     item.WAV === character.WAV &&
-        //                     item.WSD === character.WSD &&
-        //                     item.fcstTime === character.fcstTime
-        //                 ) === idx
-        //               );
-        //             }
-        //           );
-        //           break;
-        //         }
-        //       }
-        //     }
-        //   }
-        // }
       }
     },
     // 내일 날씨
     tomorrowProperty(num) {
+      console.log("tomorrowProperty");
       let threeDaysTem = this.threeDaysTem;
       let shortTerm = this.shortTerm;
       let saveData = {};
@@ -370,7 +261,21 @@ export default {
       let fcstValue = "";
       let fcstTime = "0";
       let time = "";
-      let date = String(parseInt(this.dateData.date) + 1);
+      let date = new Date();
+      let tomorrowDate = new Date(date.setDate(date.getDate() + 1));
+      let tomorrowGetYear = String(tomorrowDate.getFullYear());
+      let tomorrowGetMonth = String(tomorrowDate.getMonth() + 1);
+      let tomorrowGetDate = String(tomorrowDate.getDate());
+      let tomorrow = "";
+      if (parseInt(tomorrowGetMonth) < 10) {
+        tomorrowGetMonth = "0" + tomorrowGetMonth;
+      }
+      if (parseInt(tomorrowGetDate) < 10) {
+        tomorrowGetDate = "0" + tomorrowGetDate;
+      }
+      tomorrow = tomorrowGetYear + tomorrowGetMonth + tomorrowGetDate;
+      // console.log("tomorrow = ", tomorrow);
+
       time = fcstTime;
       time = String(num) + "00";
       if (time.length < 4) {
@@ -379,14 +284,14 @@ export default {
 
       // 초단기예보가 현재시점부터 다음날까지 이어져있으면 내일날씨에 초단기예보를 저장한다
       let checkData = shortTerm.find((e) => {
-        e.fcstDate === date && e.fcstTime === time;
+        e.fcstDate === tomorrow && e.fcstTime === time;
       });
       // map안에서 함수를 쓰려면 {}로 안을 감싸야한다.
       if (checkData) {
         console.log("내일 초단기예보");
         shortTerm.map((x) => {
           // console.log("date = ", date);
-          if (x.fcstDate === date) {
+          if (x.fcstDate === tomorrow) {
             if (x.fcstTime === time) {
               // console.log("x = ", x.fcstDate);
               category = x.category;
@@ -448,64 +353,16 @@ export default {
             }
           );
         });
-
-        // for (let i = 0; i < shortTerm.length; i++) {
-        //   if (date === shortTerm[i].fcstDate) {
-        //     // console.log("shortTerm[i] = ", shortTerm[i]);
-        //     if (time === shortTerm[i].fcstTime) {
-        //       category = shortTerm[i].category;
-        //       fcstValue = shortTerm[i].fcstValue;
-        //       if (category === "T1H") {
-        //         // 기온
-        //         saveData[`TMP`] = fcstValue + "°C";
-        //       } else if (category === "REH") {
-        //         // 습도
-        //         saveData[`${category}`] = fcstValue + "%";
-        //       } else if (category === "WSD") {
-        //         // 풍속
-        //         saveData[`${category}`] = fcstValue + "m/s";
-        //       } else if (category === "SKY") {
-        //         // 하늘상태
-        //         if (fcstValue == 1) {
-        //           saveData[`${category}`] = "맑음";
-        //         } else if (fcstValue == 2) {
-        //           saveData[`${category}`] = "맑음";
-        //         } else if (fcstValue == 3) {
-        //           saveData[`${category}`] = "구름 많음";
-        //         } else if (fcstValue == 4) {
-        //           saveData[`${category}`] = "흐림";
-        //         }
-        //       } else if (category === "RN1") {
-        //         if (fcstValue === "강수없음") {
-        //           saveData[`PCP`] = fcstValue;
-        //         } else {
-        //           saveData[`PCP`] = fcstValue + "mm";
-        //         }
-        //       } else {
-        //         // 그 외의 데이터
-        //         saveData[`${category}`] = fcstValue;
-        //       }
-
-        //       if (Object.keys(saveData).length > 9) {
-        //         saveData["fcstTime"] =
-        //           shortTerm[i].fcstTime.substring(0, 2) + "시";
-        //         this.tomorrowDatas.push(saveData);
-        //         continue;
-        //       }
-        //     }
-        //   }
-        // }
       } else if (checkData === undefined) {
+        // console.log("내일단기예보 저장");
         // map으로 단기예보 저장
-        // console.log("내일 단기예보 저장");
         threeDaysTem.map((x) => {
-          if (x.fcstDate === "20220821" && x.fcstTime == time) {
-            console.log("time = ", time);
-            console.log("x = ", x);
-          }
-          if (x.fcstDate === date) {
+          // console.log(x.fcstDate);
+          // console.log(date);
+          if (x.fcstDate === tomorrow) {
+            // console.log("x.fcstDate === ", date);
+            // console.log(x.category);
             if (x.fcstTime === time) {
-              // console.log("내일 단기예보 저장 = ", x.fcstTime);
               category = x.category;
               fcstValue = x.fcstValue;
               if (category === "TMP") {
@@ -529,9 +386,6 @@ export default {
               }
               saveData["fcstTime"] = x.fcstTime.substring(0, 2) + "시";
               this.tomorrowDatas.push(saveData);
-
-              // 이벤트버스 닫기
-              bus.$emit("end:spinner");
             }
           }
           this.tomorrowDatas = this.tomorrowDatas.filter(
@@ -557,80 +411,18 @@ export default {
               );
             }
           );
+          // 이벤트버스 닫기
+          bus.$emit("end:spinner");
         });
-
-        // for (let i = 0; i < threeDaysTem.length; i++) {
-        //   if (String(date) === threeDaysTem[i].fcstDate) {
-        //     if (time === threeDaysTem[i].fcstTime) {
-        //       category = threeDaysTem[i].category;
-        //       fcstValue = threeDaysTem[i].fcstValue;
-        //       if (category === "TMP") {
-        //         saveData[`${category}`] = fcstValue + "°C";
-        //       } else if (category === "REH") {
-        //         saveData[`${category}`] = fcstValue + "%";
-        //       } else if (category === "WSD") {
-        //         saveData[`${category}`] = fcstValue + "m/s";
-        //       } else if (category === "SKY") {
-        //         if (fcstValue == 1) {
-        //           saveData[`${category}`] = "맑음";
-        //         } else if (fcstValue == 2) {
-        //           saveData[`${category}`] = "맑음";
-        //         } else if (fcstValue == 3) {
-        //           saveData[`${category}`] = "구름 많음";
-        //         } else if (fcstValue == 4) {
-        //           saveData[`${category}`] = "흐림";
-        //         }
-        //       } else {
-        //         saveData[`${category}`] = fcstValue;
-        //       }
-        //       if (Object.keys(saveData).length > 11) {
-        //         saveData["fcstTime"] =
-        //           threeDaysTem[i].fcstTime.substring(0, 2) + "시";
-
-        //         this.tomorrowDatas.push(saveData);
-
-        //         if (this.tomorrowDatas.some((val) => val.fcstTime === "23시")) {
-        //           this.tomorrowDatas = this.tomorrowDatas.filter(
-        //             (character, idx, arr) => {
-        //               return (
-        //                 arr.findIndex(
-        //                   (item) =>
-        //                     item.PCP === character.PCP &&
-        //                     item.POP === character.POP &&
-        //                     item.PTY === character.PTY &&
-        //                     item.REH === character.REH &&
-        //                     item.SKY === character.SKY &&
-        //                     item.SNO === character.SNO &&
-        //                     item.TMN === character.TMN &&
-        //                     item.TMP === character.TMP &&
-        //                     item.UUU === character.UUU &&
-        //                     item.VEC === character.VEC &&
-        //                     item.VVV === character.VVV &&
-        //                     item.WAV === character.WAV &&
-        //                     item.WSD === character.WSD &&
-        //                     item.fcstTime === character.fcstTime
-        //                 ) === idx
-        //               );
-        //             }
-        //           );
-        //           break;
-        //         }
-        //       }
-        //     }
-        //   }
-        // }
       }
     },
   },
   computed: {
     checkWeatherData() {
-      console.log("checkWeatherData호출");
       let threeDaysTem = this.$store.state.threeDaysTem;
       let shortTem = this.$store.state.shortTermData;
       let payLoad = [];
-
       payLoad.push(threeDaysTem, shortTem);
-
       return payLoad;
     },
   },
