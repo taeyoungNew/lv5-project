@@ -17,6 +17,7 @@ import {
   faTemperatureHalf,
   faDroplet,
   faLocationDot,
+  faMagnifyingGlass,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faFaceGrinSquint,
@@ -26,6 +27,7 @@ import {
   faFaceAngry,
   faFaceLaughBeam,
   faFaceMeh,
+  faCircleQuestion,
 } from "@fortawesome/free-regular-svg-icons";
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -49,7 +51,9 @@ library.add(
   faWind,
   faTemperatureHalf,
   faDroplet,
-  faLocationDot
+  faLocationDot,
+  faMagnifyingGlass,
+  faCircleQuestion
 );
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 

@@ -11,43 +11,61 @@
           <v-card class="pt-3" outlined>
             <font-awesome-icon
               class="grade-icon"
-              v-if="n.dataGrade === '1'"
+              color="#bdc3c7"
+              v-if="n.dataGrade === '1' && n.dataValue !== '-'"
               icon="fa-regular fa-face-grin-squint"
             >
             </font-awesome-icon>
             <font-awesome-icon
               class="grade-icon"
-              v-if="n.dataGrade === '2'"
+              color="#bdc3c7"
+              v-if="n.dataGrade === '2' && n.dataValue !== '-'"
               icon="fa-regular fa-face-laugh-beam"
             />
             <font-awesome-icon
               class="grade-icon"
-              v-if="n.dataGrade === '3'"
+              color="#bdc3c7"
+              v-if="n.dataGrade === '3' && n.dataValue !== '-'"
               icon="fa-regular fa-face-grin-wide"
             />
             <font-awesome-icon
               class="grade-icon"
-              v-if="n.dataGrade === '4'"
+              color="#bdc3c7"
+              v-if="n.dataGrade === '4' && n.dataValue !== '-'"
               icon="fa-regular fa-face-frown"
             />
             <font-awesome-icon
               class="grade-icon"
-              v-if="n.dataGrade === '5'"
+              color="#bdc3c7"
+              v-if="n.dataGrade === '5' && n.dataValue !== '-'"
               icon="fa-regular fa-face-angry-horns"
             />
             <font-awesome-icon
               class="grade-icon"
-              v-if="n.dataGrade === null || n.dataValue === ''"
+              color="#bdc3c7"
+              v-if="n.dataGrade === null || n.dataValue === '-'"
               icon="fa-regular fa-face-meh"
             />
 
             <p class="grades-message">
-              <span v-if="n.dataGrade === '1'">아주 좋음</span>
-              <span v-if="n.dataGrade === '2'">좋음</span>
-              <span v-if="n.dataGrade === '3'">보통</span>
-              <span v-if="n.dataGrade === '4'">나쁨</span>
-              <span v-if="n.dataGrade === '5'">아주 나쁨</span>
-              <span v-if="n.dataGrade === null">자료 이상</span>
+              <span v-if="n.dataGrade === '1' && n.dataValue !== '-'"
+                >아주 좋음</span
+              >
+              <span v-if="n.dataGrade === '2' && n.dataValue !== '-'"
+                >좋음</span
+              >
+              <span v-if="n.dataGrade === '3' && n.dataValue !== '-'"
+                >보통</span
+              >
+              <span v-if="n.dataGrade === '4' && n.dataValue !== '-'"
+                >나쁨</span
+              >
+              <span v-if="n.dataGrade === '5' && n.dataValue !== '-'"
+                >아주 나쁨</span
+              >
+              <span v-if="n.dataGrade === null || n.dataValue === '-'"
+                >자료 이상</span
+              >
             </p>
             <v-card-title class="data-titles"> {{ n.name }} </v-card-title>
             <v-card-subtitle class="data-subtitles">
@@ -82,7 +100,6 @@ export default {
   },
   methods: {
     detailsInfo(params) {
-      // console.log("검색한 미세먼지: ", params);
       if (params !== "" || null) {
         this.detailDatas = [
           {
@@ -111,13 +128,12 @@ export default {
   },
   computed: {
     checkAirData() {
-      // console.log("val", this.$store.state.findAreaData);
       return this.$store.state.findAreaData;
     },
   },
   watch: {
-    async checkAirData(val) {
-      await this.detailsInfo(val);
+    checkAirData(val) {
+      this.detailsInfo(val);
     },
   },
 };

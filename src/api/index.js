@@ -61,7 +61,6 @@ function findMetStation() {
 // getShortTermForecast
 // fetchWeatherData
 function getNowTerm() {
-  console.log("초단기실황");
   // 초단기실황
   let hour = getTimeHours;
   let minutes = getTimeMinutes;
@@ -426,8 +425,26 @@ function getTimeNow() {
 
   let day = mycurrentDate.getDay();
 
+  let tomorrowDate = new Date(
+    mycurrentDate.setDate(mycurrentDate.getDate() + 1)
+  );
+  // 다음 날짜 구하기
+  let tomorrowGetYear = String(tomorrowDate.getFullYear());
+  let tomorrowGetMonth = String(tomorrowDate.getMonth() + 1);
+  let tomorrowGetDate = String(tomorrowDate.getDate());
+  let tomorrow = "";
+  if (parseInt(tomorrowGetMonth) < 10) {
+    tomorrowGetMonth = "0" + tomorrowGetMonth;
+  }
+  if (parseInt(tomorrowGetDate) < 10) {
+    tomorrowGetDate = "0" + tomorrowGetDate;
+  }
+  // 다음 날짜
+  tomorrow = tomorrowGetYear + tomorrowGetMonth + tomorrowGetDate;
+
   const nowTime = {
     date: date,
+    tmDate: tomorrow,
     day: day,
     hours: hours,
     minutes: minutes,
@@ -444,12 +461,8 @@ function sysPaddingZro(lnum, mydpt) {
   for (let i = 0; i < mydpt; i++) {
     clckzro += "0";
   }
-  // console.log((clckzro + lnum).slice(-mydpt));
   return (clckzro + lnum).slice(-mydpt);
 }
-// setInterval(() => {
-//   getTimeNow();
-// }, 5000);
 
 export const instance = createInstance();
 export {

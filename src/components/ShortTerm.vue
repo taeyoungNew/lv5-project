@@ -16,14 +16,14 @@
           v-if="showShortTem === 'today'"
           :headers="todayHeaders"
           :items="todayDatas"
-          :items-per-page="15"
+          :items-per-page="10"
           class="elevation-0"
         />
         <v-data-table
           v-if="showShortTem === 'tomorrow'"
           :headers="tomorrowHeaders"
           :items="tomorrowDatas"
-          :items-per-page="15"
+          :items-per-page="10"
           class="elevation-0"
         />
       </v-col>
@@ -253,7 +253,6 @@ export default {
     },
     // 내일 날씨
     tomorrowProperty(num) {
-      console.log("tomorrowProperty");
       let threeDaysTem = this.threeDaysTem;
       let shortTerm = this.shortTerm;
       let saveData = {};
@@ -261,20 +260,8 @@ export default {
       let fcstValue = "";
       let fcstTime = "0";
       let time = "";
-      let date = new Date();
-      let tomorrowDate = new Date(date.setDate(date.getDate() + 1));
-      let tomorrowGetYear = String(tomorrowDate.getFullYear());
-      let tomorrowGetMonth = String(tomorrowDate.getMonth() + 1);
-      let tomorrowGetDate = String(tomorrowDate.getDate());
-      let tomorrow = "";
-      if (parseInt(tomorrowGetMonth) < 10) {
-        tomorrowGetMonth = "0" + tomorrowGetMonth;
-      }
-      if (parseInt(tomorrowGetDate) < 10) {
-        tomorrowGetDate = "0" + tomorrowGetDate;
-      }
-      tomorrow = tomorrowGetYear + tomorrowGetMonth + tomorrowGetDate;
-      // console.log("tomorrow = ", tomorrow);
+      let date = getTimeNow();
+      let tomorrow = date.tmDate;
 
       time = fcstTime;
       time = String(num) + "00";
@@ -288,7 +275,6 @@ export default {
       });
       // map안에서 함수를 쓰려면 {}로 안을 감싸야한다.
       if (checkData) {
-        console.log("내일 초단기예보");
         shortTerm.map((x) => {
           // console.log("date = ", date);
           if (x.fcstDate === tomorrow) {
@@ -412,8 +398,8 @@ export default {
             }
           );
           // 이벤트버스 닫기
-          bus.$emit("end:spinner");
         });
+        bus.$emit("end:spinner");
       }
     },
   },

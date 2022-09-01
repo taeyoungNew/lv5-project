@@ -1,7 +1,7 @@
 <template>
   <v-container class="search-container">
     <div class="search-box">
-      <v-row>
+      <v-row align-self="center" align="center">
         <v-col>
           <v-text-field
             id="keyword"
@@ -14,7 +14,13 @@
         </v-col>
         <v-col>
           <button class="search-button search-icon" @click="searchPlase()">
-            <span class="material-icons search-icon"> search </span>
+            <!-- <span class="material-icons search-icon"> search </span> -->
+            <font-awesome-icon
+              color="#bdc3c7"
+              :font-size="ChangeSize"
+              icon="fa-solid
+            fa-magnifying-glass"
+            />
           </button>
         </v-col>
       </v-row>
@@ -90,6 +96,23 @@ export default {
       this.$store.dispatch("GET_ADDRESS", addressName);
     },
   },
+  computed: {
+    ChangeSize() {
+      switch (this.$vuetify.breakpoint.name) {
+        case "xl":
+          return 32;
+        case "lg":
+          return 32;
+        case "md":
+          return 32;
+        case "sm":
+          return 32;
+
+        default:
+          return 15;
+      }
+    },
+  },
 };
 </script>
 
@@ -112,15 +135,7 @@ export default {
   display: none;
 }
 
-.search-icon {
-  color: #caf0f8;
-  font-weight: 400;
-}
-
 .material-icons {
   font-size: 40px;
-}
-.search-button {
-  vertical-align: middle;
 }
 </style>

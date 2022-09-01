@@ -34,6 +34,12 @@
             icon="fa-solid fa-cloud-rain"
           >
           </font-awesome-icon>
+          <font-awesome-icon
+            v-if="weatherIcon == 5"
+            class="weather-icon"
+            icon="fa-solid fa-cloud-rain"
+          >
+          </font-awesome-icon>
         </v-col>
 
         <font-awesome-icon icon="fa-solid fa-temperature-half " class="fa-3x" />
@@ -122,7 +128,7 @@ export default {
   data() {
     return {
       days: [],
-
+      sliderColor: { color: "primary" },
       localCodes: localCodes,
       weatherIcon: 0,
       labels: ["SU", "MO", "TU", "WED", "TH", "FR", "SA"],
@@ -140,6 +146,7 @@ export default {
       getWeather: "",
       nowWeather: "",
       windSpeed: "",
+      preType: "",
       humidityPersent: "",
       hourPrecipitation: "",
       shortTermElement: [
@@ -171,6 +178,7 @@ export default {
   },
 
   methods: {
+    // 현재 날씨를 가져오기
     getWeatherdata() {
       let getWeather = this.getWeather;
       let nowWeather = [];
@@ -185,27 +193,11 @@ export default {
       this.currentTemperature = this.nowWeather[0].obsrValue;
       this.hourPrecipitation = this.nowWeather[1].obsrValue;
       this.humidityPersent = this.nowWeather[5].obsrValue;
+      this.preType = this.nowWeather[6].obsrValue;
       this.windSpeed = this.nowWeather[9].obsrValue;
     },
-    // mediumTermForecast() {
-    //   let getAddress = this.getAddress;
-    //   let areaCode = this.localCodes.datas;
-
-    //   for (let i = 0; i < areaCode.length; i++) {
-    //     console.log(
-    //       getAddress.replace(/(\s*)/g, "").includes(areaCode[i].doName)
-    //     );
-    //   }
-
-    //   console.log("getAddress = ", this.getAddress);
-    // },
     showIcon(val) {
       let shortTerm = val;
-      let nowTime = getTimeNow().hours;
-      let fcstTime = String(Number(nowTime) + 1) + "00";
-      if (fcstTime.length === 3) {
-        fcstTime = "0" + fcstTime;
-      }
       let skyNum = shortTerm.findIndex((val) => val.category === "SKY");
       let skyData = shortTerm[skyNum];
       this.weatherIcon = skyData.fcstValue;
@@ -234,9 +226,9 @@ export default {
     },
     get3DaysWeather(param) {
       let getNowTime = getTimeNow();
-      let date = getNowTime.date;
-      let tomorrow = String(Number(date) + 1);
-      let tomAft = String(Number(date) + 2);
+      // let date = getNowTime.date;
+      let tomorrow = getNowTime.tmDate;
+      let tomAft = String(parseInt(getNowTime.tmDate) + 1);
       let tomSkyDatas = [];
       let tomTmn = "";
       let tomTmx = "";

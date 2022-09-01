@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <div id="map"></div>
-  </div>
+  <v-container id="map-wrap">
+    <div id="map" />
+  </v-container>
 </template>
 
 <script>
@@ -134,7 +134,7 @@ export default {
             if (status === kakao.maps.services.Status.OK) {
               detailAddr = result[0].address.address_name;
             }
-            console.log("detailAddr = ", detailAddr);
+
             saveAddress(detailAddr);
           }
         );
@@ -144,12 +144,12 @@ export default {
     sendAreaDatas() {
       mapWeatherGrids(this.sidoCoord);
     },
+    // 지도에 날씨 데이터를 받아오고 오버레이 띄우기
     createOverlay(params) {
       const map = this.map;
       const getMapWeather = params;
-      // console.log("getMapWeather", getMapWeather);
+
       for (let i = 0; i < getMapWeather.length; i++) {
-        // console.log("rain val", Number(getMapWeather[i].rainVal));
         let skyStatus = "";
         if (getMapWeather[i].skyVal === "1") {
           skyStatus = this.sunIcon;
@@ -199,11 +199,28 @@ export default {
 </script>
 
 <style>
+/* kakao overlay는 scoped를 쓰면 적용이 안됨 */
+#map-wrap {
+  position: relative;
+  width: 100%;
+  height: 80%;
+  overflow: hidden;
+  padding-bottom: 88%;
+}
 #map {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  border-radius: 5px;
+}
+/* #map {
   width: 100%;
   height: 900px;
   border-radius: 5px;
-}
+} */
 
 .icon-box {
   display: inline-block;
