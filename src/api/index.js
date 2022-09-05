@@ -44,28 +44,27 @@ function createInstance() {
 function fetchData(param) {
   if (param === undefined) {
     return axios.get(
-      `/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty?sidoName=${store.state.defaultSerch}&pageNo=1&numOfRows=622&returnType=json&serviceKey=UkRbyOIUcZ8nSFUYHH4gbSjw2NPG0hjOkLMa8fUlkNpnstI7CbHORuOta%2BI8WusIGFq9AgdYa2vOaCeIYTi%2Bpw%3D%3D&ver=1.0`
+      `https://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty?sidoName=${store.state.defaultSerch}&pageNo=1&numOfRows=622&returnType=json&serviceKey=UkRbyOIUcZ8nSFUYHH4gbSjw2NPG0hjOkLMa8fUlkNpnstI7CbHORuOta%2BI8WusIGFq9AgdYa2vOaCeIYTi%2Bpw%3D%3D&ver=1.0`
     );
   } else {
     return axios.get(
-      `/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty?sidoName=${param}&pageNo=1&numOfRows=100&returnType=json&serviceKey=UkRbyOIUcZ8nSFUYHH4gbSjw2NPG0hjOkLMa8fUlkNpnstI7CbHORuOta%2BI8WusIGFq9AgdYa2vOaCeIYTi%2Bpw%3D%3D&ver=1.0`
+      `https://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty?sidoName=${param}&pageNo=1&numOfRows=100&returnType=json&serviceKey=UkRbyOIUcZ8nSFUYHH4gbSjw2NPG0hjOkLMa8fUlkNpnstI7CbHORuOta%2BI8WusIGFq9AgdYa2vOaCeIYTi%2Bpw%3D%3D&ver=1.0`
     );
   }
 }
 
 function findMetStation() {
   return axios.get(
-    `/B552584/MsrstnInfoInqireSvc/getNearbyMsrstnList?tmX=244148.546388&tmY=412423.75772&returnType=json&serviceKey=${serviceKey}`
+    `https://apis.data.go.kr/B552584/MsrstnInfoInqireSvc/getNearbyMsrstnList?tmX=244148.546388&tmY=412423.75772&returnType=json&serviceKey=${serviceKey}`
   );
 }
-// getShortTermForecast
+
 // fetchWeatherData
 function getNowTerm() {
   // 초단기실황
   let hour = getTimeHours;
   let minutes = getTimeMinutes;
   let resultTime = "";
-  // console.log("getNowTerm", String(hour) + String(minutes));
   if (minutes < 30) {
     minutes = 30;
     resultTime = String(hour - 1) + String(minutes);
@@ -79,7 +78,7 @@ function getNowTerm() {
   }
 
   return axios.get(
-    `/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?serviceKey=${serviceKey}&numOfRows=10&dataType=json&pageNo=1&base_date=${getDate}&base_time=${resultTime}
+    `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?serviceKey=${serviceKey}&numOfRows=10&dataType=json&pageNo=1&base_date=${getDate}&base_time=${resultTime}
     &nx=${store.state.gridX}&ny=${store.state.gridY}`
   );
 }
@@ -117,7 +116,7 @@ async function getShortTerm(params) {
       // 초단기실황
       await axios
         .get(
-          `/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?serviceKey=${serviceKey}&numOfRows=10&dataType=json&pageNo=1&base_date=${getDate}&base_time=${resultTime}
+          `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?serviceKey=${serviceKey}&numOfRows=10&dataType=json&pageNo=1&base_date=${getDate}&base_time=${resultTime}
         &nx=${gridXY[i].gridX}&ny=${gridXY[i].gridY}`
         )
         .then(function (res) {
@@ -134,7 +133,7 @@ async function getShortTerm(params) {
       // 초단기예보
       await axios
         .get(
-          `/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst?serviceKey=${tmServiceKey}&dataType=json&numOfRows=36&pageNo=1&base_date=${getDate}&base_time=${resultTime}&nx=${gridXY[i].gridX}&ny=${gridXY[i].gridY}`
+          `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst?serviceKey=${tmServiceKey}&dataType=json&numOfRows=36&pageNo=1&base_date=${getDate}&base_time=${resultTime}&nx=${gridXY[i].gridX}&ny=${gridXY[i].gridY}`
         )
         .then(function (res) {
           srtTemFcst = res.data.response.body.items.item;
@@ -153,13 +152,13 @@ async function getShortTerm(params) {
         rainVal: rainVal,
       };
     }
-
+    // 지도에 표시할 날씨 오버레이의 데이터 보내기
     store.dispatch("WEATHER_ON_MAP", dataList);
   } else {
     gridX = store.state.gridX;
     gridY = store.state.gridY;
     return axios.get(
-      `/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst?serviceKey=${tmServiceKey}&dataType=json&numOfRows=100&pageNo=1&base_date=${getDate}&base_time=${resultTime}&nx=${gridX}&ny=${gridY}`
+      `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst?serviceKey=${tmServiceKey}&dataType=json&numOfRows=100&pageNo=1&base_date=${getDate}&base_time=${resultTime}&nx=${gridX}&ny=${gridY}`
     );
   }
 }
@@ -181,7 +180,7 @@ function threeDaysWeather() {
 
   if (fetchTimes.includes(getNow)) {
     return axios.get(
-      `/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${tmServiceKey}&dataType=json&numOfRows=1000&pageNo=1&base_date=${getDate}&base_time=${getNow}&nx=${store.state.gridX}&ny=${store.state.gridY}`
+      `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${tmServiceKey}&dataType=json&numOfRows=1000&pageNo=1&base_date=${getDate}&base_time=${getNow}&nx=${store.state.gridX}&ny=${store.state.gridY}`
     );
   } else {
     getNow = mycurrentDate.getHours();
@@ -198,21 +197,21 @@ function threeDaysWeather() {
         if (getNow == 0 || getNow == 1) {
           let date = Number(getDate) - 1;
           return axios.get(
-            `/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${tmServiceKey}&dataType=json&numOfRows=1000&pageNo=1&base_date=${date}&base_time=${"2300"}&nx=${
+            `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${tmServiceKey}&dataType=json&numOfRows=1000&pageNo=1&base_date=${date}&base_time=${"2300"}&nx=${
               store.state.gridX
             }&ny=${store.state.gridY}`
           );
         }
         if (getNow < near && getNow !== 0) {
           return axios.get(
-            `/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${tmServiceKey}&dataType=json&numOfRows=1000&pageNo=1&base_date=${getDate}&base_time=${
+            `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${tmServiceKey}&dataType=json&numOfRows=1000&pageNo=1&base_date=${getDate}&base_time=${
               "0" + String(near - 3) + "00"
             }&nx=${store.state.gridX}&ny=${store.state.gridY}`
           );
         }
 
         return axios.get(
-          `/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${tmServiceKey}&dataType=json&numOfRows=1000&pageNo=1&base_date=${getDate}&base_time=${
+          `https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst?serviceKey=${tmServiceKey}&dataType=json&numOfRows=1000&pageNo=1&base_date=${getDate}&base_time=${
             "0" + String(near) + "00"
           }&nx=${store.state.gridX}&ny=${store.state.gridY}`
         );
@@ -223,7 +222,9 @@ function threeDaysWeather() {
 
 function getGridXY(getLng, getLat) {
   // console.log("getGridXY= ", getLat, getLng);
+  // 가져온 좌표를 TM좌표로 변환하기 위해 changeTmCoord함수를 호출
   changeTmCoord(getLng, getLat);
+
   let RE = 6371.00877; // 지구 반경(km)
   let GRID = 5.0; // 격자 간격(km)
   let SLAT1 = 30.0; // 투영 위도1(degree)
@@ -355,7 +356,7 @@ async function findMeasuring(getTmXY) {
   let measuringData = "";
   await axios
     .get(
-      `/B552584/MsrstnInfoInqireSvc/getNearbyMsrstnList?tmX=${getTmXY.x}&tmY=${getTmXY.y}&returnType=json&serviceKey=${tmServiceKey}`
+      `https://apis.data.go.kr/B552584/MsrstnInfoInqireSvc/getNearbyMsrstnList?tmX=${getTmXY.x}&tmY=${getTmXY.y}&returnType=json&serviceKey=${tmServiceKey}`
     )
     .then(function (res) {
       // console.log(res.data.response.body.items);

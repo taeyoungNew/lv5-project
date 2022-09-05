@@ -132,8 +132,12 @@ export default {
     },
   },
   watch: {
-    checkAirData(val) {
-      this.detailsInfo(val);
+    async checkAirData(val) {
+      try {
+        await this.detailsInfo(val);
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
 };

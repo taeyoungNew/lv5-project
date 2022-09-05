@@ -12,7 +12,7 @@
               <kakao-map />
             </v-card>
           </v-col>
-          <v-col v-if="!!getAddress">
+          <v-col v-if="!!getAddress && errCard === false">
             <v-card class="pa-3" outlined>
               <v-row>
                 <v-col>
@@ -30,17 +30,21 @@
               <air-inpo />
             </v-card>
           </v-col>
-          <v-col v-else>
+          <v-col v-else-if="!getAddress && errCard === false">
             <before-seach />
+          </v-col>
+          <v-col v-else-if="errCard === true">
+            <err-card />
           </v-col>
         </v-row>
       </v-container>
     </v-card>
     <v-card outlined>
       <v-container>
-        <v-card class="pa-0" outlined>
+        <v-card v-if="errCard === false" class="pa-0" outlined>
           <short-term />
         </v-card>
+        <v-card v-else-if="errCard === true" class="pa-0" outlined></v-card>
       </v-container>
     </v-card>
   </v-container>
@@ -55,6 +59,7 @@ import ShortTerm from "@/components/ShortTerm.vue";
 import SpinnerComponent from "@/components/common/SpinnerComponent.vue";
 import bus from "@/utils/bus.js";
 import BeforeSeach from "@/components/BeforeSeach.vue";
+import ErrCard from "@/components/ErrCard.vue";
 
 export default {
   components: {
@@ -65,12 +70,14 @@ export default {
     ShortTerm,
     SpinnerComponent,
     BeforeSeach,
+    ErrCard,
   },
   data() {
     return {
       getAddress: "",
       addressName: "",
       loadingStatus: false,
+      errCard: false,
     };
   },
   created() {
@@ -97,6 +104,9 @@ export default {
     },
   },
   computed: {
+    errWeather() {
+      return this.$store.getters.getNowWeather;
+    },
     checkAddress() {
       return this.$store.state.address;
     },
@@ -116,6 +126,15 @@ export default {
     },
   },
   watch: {
+    errWeather(val) {
+      val.find((x) => {
+        if (x.obsrValue < 0) {
+          this.errCard = true;
+        } else {
+          this.errCard = false;
+        }
+      });
+    },
     checkAddress(val) {
       this.getAddress = val;
     },
