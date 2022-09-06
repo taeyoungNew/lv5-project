@@ -19,7 +19,25 @@
 </template>
 
 <script>
-export default {};
+import bus from "@/utils/bus";
+export default {
+  data() {
+    return {
+      val: "",
+    };
+  },
+  computed: {
+    checkErr() {
+      return this.$store.state.allData.nowTerm;
+    },
+  },
+  watch: {
+    checkErr(param) {
+      this.val = param;
+      bus.$emit("end:spinner");
+    },
+  },
+};
 </script>
 
 <style></style>

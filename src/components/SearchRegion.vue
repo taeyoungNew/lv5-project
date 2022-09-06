@@ -54,6 +54,7 @@ export default {
       getAddress: [],
       map: "",
       ps: "",
+      pagination: "",
     };
   },
   methods: {
@@ -75,7 +76,8 @@ export default {
       if (status === kakao.maps.services.Status.OK) {
         this.displayPlaces(data);
       }
-      console.log("pagination = ", pagination);
+      // console.log("pagination = ", pagination);
+      this.pagination = pagination;
     },
     displayPlaces(places) {
       let getAddress = [];

@@ -107,7 +107,7 @@
 </template>
 
 <script>
-// import DateComponent from "./common/DateComponent.vue";
+import bus from "@/utils/bus";
 import { getTimeNow } from "@/api/index";
 import localCodes from "@/assets/data/localCodes.json";
 
@@ -175,6 +175,15 @@ export default {
     getWeatherdata(payload) {
       let getWeather = payload;
       let nowWeather = [];
+
+      // getWeather.find((x) => {
+      //   if (x.category === "UUU") {
+      //     console.log(x);
+      //     if (x.obseValue < 0) {
+      //       alert("한반도 밖에다 클릭함");
+      //     }
+      //   }
+      // });
       for (const elem in this.shortTermElement) {
         const result = getWeather.findIndex(
           (element) => element.category === this.shortTermElement[elem]
@@ -233,6 +242,7 @@ export default {
       let dayAftRain = [];
       let datas = param;
       this.forecast = [];
+
       for (let i = 0; i < datas.length; i++) {
         if (tomorrow === datas[i].fcstDate) {
           if ("SKY" === datas[i].category) {
@@ -306,8 +316,8 @@ export default {
         icon: dayAftIcon,
         temp: `${dayAftTmx}\xB0/${dayAftTmn}\xB0`,
       };
-      // console.log(dayAftWeather, tomWeather);
       this.forecast.push(tomWeather, dayAftWeather);
+      bus.$emit("end:spinner");
     },
     getMode(array) {
       // 1. 출연 빈도 구하기
@@ -334,23 +344,15 @@ export default {
   computed: {
     checkWeatherDatas() {
       // 여러개인 데이터를 하나로 묶어서 보내기
-      const datas = {
-        nowWeather: this.$store.state.nowWeatherData,
-        shortTerm: this.$store.state.shortTerm,
-        threeDaysTerm: this.$store.state.threeDaysTerm,
-      };
-
-      return datas;
+      return this.$store.state.allData;
     },
   },
 
   watch: {
-    checkWeatherDatas(datas) {
-      if (datas) {
-        this.getWeatherdata(datas.nowWeather);
-        this.showIcon(datas.shortTerm);
-        this.get3DaysWeather(datas.threeDaysTerm);
-      }
+    checkWeatherDatas(payLoad) {
+      this.getWeatherdata(payLoad.nowTerm);
+      this.showIcon(payLoad.shortTerm);
+      this.get3DaysWeather(payLoad.threeDaysTerm);
     },
   },
 };

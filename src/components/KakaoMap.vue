@@ -134,7 +134,6 @@ export default {
             if (status === kakao.maps.services.Status.OK) {
               detailAddr = result[0].address.address_name;
             }
-
             saveAddress(detailAddr);
           }
         );

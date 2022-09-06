@@ -12,7 +12,7 @@
               <kakao-map />
             </v-card>
           </v-col>
-          <v-col v-if="!!getAddress && errCard === false">
+          <v-col v-if="mainCard">
             <v-card class="pa-3" outlined>
               <v-row>
                 <v-col>
@@ -30,10 +30,10 @@
               <air-inpo />
             </v-card>
           </v-col>
-          <v-col v-else-if="!getAddress && errCard === false">
-            <before-seach />
+          <v-col v-if="!pageManager">
+            <before-search />
           </v-col>
-          <v-col v-else-if="errCard === true">
+          <v-col v-if="errCard">
             <err-card />
           </v-col>
         </v-row>
@@ -44,7 +44,7 @@
         <v-card v-if="errCard === false" class="pa-0" outlined>
           <short-term />
         </v-card>
-        <v-card v-else-if="errCard === true" class="pa-0" outlined></v-card>
+        <v-card v-else-if="errCard === true" class="pa-3" outlined></v-card>
       </v-container>
     </v-card>
   </v-container>
@@ -58,7 +58,7 @@ import ShowWeather from "@/components/ShowWeather.vue";
 import ShortTerm from "@/components/ShortTerm.vue";
 import SpinnerComponent from "@/components/common/SpinnerComponent.vue";
 import bus from "@/utils/bus.js";
-import BeforeSeach from "@/components/BeforeSeach.vue";
+import BeforeSearch from "@/components/BeforeSearch.vue";
 import ErrCard from "@/components/ErrCard.vue";
 
 export default {
@@ -69,7 +69,7 @@ export default {
     ShowWeather,
     ShortTerm,
     SpinnerComponent,
-    BeforeSeach,
+    BeforeSearch,
     ErrCard,
   },
   data() {
@@ -78,6 +78,7 @@ export default {
       addressName: "",
       loadingStatus: false,
       errCard: false,
+      mainCard: false,
     };
   },
   created() {
@@ -104,11 +105,11 @@ export default {
     },
   },
   computed: {
-    errWeather() {
-      return this.$store.getters.getNowWeather;
-    },
     checkAddress() {
       return this.$store.state.address;
+    },
+    pageManager() {
+      return this.$store.state.nowWeatherData;
     },
     vuetiHeight() {
       switch (this.$vuetify.breakpoint.name) {
@@ -126,12 +127,16 @@ export default {
     },
   },
   watch: {
-    errWeather(val) {
-      val.find((x) => {
-        if (x.obsrValue < 0) {
-          this.errCard = true;
-        } else {
-          this.errCard = false;
+    pageManager(val) {
+      val.map((x) => {
+        if (x.category === "T1H") {
+          if (parseInt(x.obsrValue) > 0) {
+            this.mainCard = true;
+            this.errCard = false;
+          } else if (parseInt(x.obsrValue) < 0) {
+            this.mainCard = false;
+            this.errCard = true;
+          }
         }
       });
     },

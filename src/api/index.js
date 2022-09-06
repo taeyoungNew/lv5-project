@@ -331,7 +331,7 @@ function mapWeatherGrids(payLoad) {
 }
 
 function changeTmCoord(x, y) {
-  // console.log("x", x, "y", y);
+  // console.log("x", x, "y", y)
   axios
     .get(
       `http://dapi.kakao.com/v2/local/geo/transcoord.json?x=${x}&y=${y}&input_coord=WGS84&output_coord=TM`,

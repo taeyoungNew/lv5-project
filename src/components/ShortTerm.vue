@@ -40,8 +40,8 @@ export default {
     btnTowColor: "secondary",
     showShortTem: "today",
     value: [1, 4, 2, 5, 6, 10],
-    shortTerm: "",
-    threeDaysTerm: "",
+    shortTerm: [],
+    threeDaysTerm: [],
     skyStatus: "",
     currentTemperature: "",
     todayHeaders: [
@@ -92,27 +92,17 @@ export default {
         this.showShortTem = "tomorrow";
       }
     },
-
-    // isLoading() {
-    //   this.loadingStatus = !this.loadingStatus;
-    // },
     getWeatherData() {
-      console.log("getWeatherData");
-      this.todayDatas = [];
-      this.tomorrowDatas = [];
-      // let shortTerm = this.shortTerm;
-      // let threeDaysTerm = this.threeDaysTerm;
       this.dateData = getTimeNow();
-
       this.time = String(Number(this.dateData.hours));
-
       for (let num = 1; num < 24; num++) {
         this.todayProperty(num);
       }
-
       for (let num = 0; num < 24; num++) {
         this.tomorrowProperty(num);
       }
+      // 이벤트버스 닫기
+      bus.$emit("end:spinner");
     },
     // 오늘 날씨
     todayProperty(num) {
@@ -138,6 +128,7 @@ export default {
       if (checkData) {
         // map을 활용한 초단기예보 저장방법
         shortTerm.map((x) => {
+          console.log(x);
           // console.log("date = ", date);
           if (x.fcstDate === date) {
             if (x.fcstTime === time) {
@@ -399,30 +390,29 @@ export default {
               );
             }
           );
-          bus.$emit("end:spinner");
-          // 이벤트버스 닫기
         });
       }
     },
   },
   computed: {
-    checkShortTerm() {
-      return this.$store.state.shortTerm;
-    },
-    check3DaysTerm() {
-      return this.$store.state.threeDaysTerm;
+    getTermData() {
+      return this.$store.getters.sandShortTerm;
     },
   },
-
   watch: {
-    checkShortTerm(val) {
-      this.shortTerm = val;
-    },
-    check3DaysTerm(val) {
-      this.threeDaysTerm = val;
-      if (this.threeDaysTerm) {
-        this.getWeatherData();
-      }
+    getTermData(payLoad) {
+      this.shortTerm = [];
+      this.threeDaysTerm = [];
+      this.todayDatas = [];
+      this.tomorrowDatas = [];
+      payLoad.shortTerm.map((x) => {
+        this.shortTerm.push(x);
+      });
+      payLoad.threeDaysTerm.map((x) => {
+        this.threeDaysTerm.push(x);
+      });
+
+      this.getWeatherData();
     },
   },
 };

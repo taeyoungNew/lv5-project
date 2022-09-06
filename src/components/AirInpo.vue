@@ -100,7 +100,7 @@ export default {
   },
   methods: {
     detailsInfo(params) {
-      if (params !== "" || null) {
+      if (params !== "") {
         this.detailDatas = [
           {
             dataValue: params.pm10Value,
