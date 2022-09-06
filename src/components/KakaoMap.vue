@@ -120,11 +120,11 @@ export default {
 
       this.map = new kakao.maps.Map(mapContainer, mapOption);
       kakao.maps.event.addListener(this.map, "click", function (mouseEvent) {
+        bus.$emit("start:spinner");
         // 클릭한 위도, 경도 정보를 가져옵니다
         latlng = mouseEvent.latLng;
         const gridX = latlng.getLng();
         const gridY = latlng.getLat();
-        bus.$emit("start:spinner");
         getGridXY(gridX, gridY);
 
         // 좌표로 주소얻기
@@ -134,12 +134,11 @@ export default {
             if (status === kakao.maps.services.Status.OK) {
               detailAddr = result[0].address.address_name;
             }
-
             saveAddress(detailAddr);
           }
         );
       });
-      this.$store.dispatch("GET_ADDRESS", detailAddr);
+      // this.$store.dispatch("GET_ADDRESS", detailAddr);
     },
     sendAreaDatas() {
       mapWeatherGrids(this.sidoCoord);
@@ -205,7 +204,7 @@ export default {
   width: 100%;
   height: 80%;
   overflow: hidden;
-  padding-bottom: 88%;
+  padding-bottom: 86%;
 }
 #map {
   position: absolute;

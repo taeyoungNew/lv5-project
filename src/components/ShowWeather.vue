@@ -1,8 +1,8 @@
 <template>
   <v-card outlined>
-    <v-list-item> </v-list-item>
+    <v-list-item />
     <v-card-text>
-      <v-row align="center">
+      <v-row no-gutters align="center">
         <v-col class="text-center" id="nowWeather">
           <font-awesome-icon
             v-if="false"
@@ -34,18 +34,10 @@
             icon="fa-solid fa-cloud-rain"
           >
           </font-awesome-icon>
-          <font-awesome-icon
-            v-if="weatherIcon == 5"
-            class="weather-icon"
-            icon="fa-solid fa-cloud-rain"
-          >
-          </font-awesome-icon>
         </v-col>
-
-        <font-awesome-icon icon="fa-solid fa-temperature-half " class="fa-3x" />
-
-        <v-col class="text-h2"> {{ currentTemperature }}&deg;C </v-col>
-        <v-col cols="12"> </v-col>
+        <v-col class="text-h2" align-self="start">
+          {{ currentTemperature }}&deg;C
+        </v-col>
       </v-row>
     </v-card-text>
 
@@ -69,12 +61,12 @@
           style="color: gray"
         />
       </v-list-item-icon>
-      <v-list-item-subtitle v-if="hourPrecipitation === 0"
-        >- &deg;mm</v-list-item-subtitle
-      >
-      <v-list-item-subtitle v-else
-        >{{ hourPrecipitation }} &deg;mm</v-list-item-subtitle
-      >
+      <v-list-item-subtitle v-if="hourPrecipitation === 0">
+        - &deg;mm
+      </v-list-item-subtitle>
+      <v-list-item-subtitle v-else>
+        {{ hourPrecipitation }} &deg;mm
+      </v-list-item-subtitle>
     </v-list-item>
     <v-list-item>
       <v-list-item-icon>
@@ -94,6 +86,7 @@
       :tick-labels="labels"
       class="mx-4"
       ticks
+      disabled
     ></v-slider>
 
     <v-list class="transparent">
@@ -114,7 +107,7 @@
 </template>
 
 <script>
-// import DateComponent from "./common/DateComponent.vue";
+import bus from "@/utils/bus";
 import { getTimeNow } from "@/api/index";
 import localCodes from "@/assets/data/localCodes.json";
 
@@ -179,9 +172,18 @@ export default {
 
   methods: {
     // 현재 날씨를 가져오기
-    getWeatherdata() {
-      let getWeather = this.getWeather;
+    getWeatherdata(payload) {
+      let getWeather = payload;
       let nowWeather = [];
+
+      // getWeather.find((x) => {
+      //   if (x.category === "UUU") {
+      //     console.log(x);
+      //     if (x.obseValue < 0) {
+      //       alert("한반도 밖에다 클릭함");
+      //     }
+      //   }
+      // });
       for (const elem in this.shortTermElement) {
         const result = getWeather.findIndex(
           (element) => element.category === this.shortTermElement[elem]
@@ -190,13 +192,14 @@ export default {
       }
 
       this.nowWeather = nowWeather;
-      this.currentTemperature = this.nowWeather[0].obsrValue;
-      this.hourPrecipitation = this.nowWeather[1].obsrValue;
-      this.humidityPersent = this.nowWeather[5].obsrValue;
-      this.preType = this.nowWeather[6].obsrValue;
-      this.windSpeed = this.nowWeather[9].obsrValue;
+      this.currentTemperature = nowWeather[0].obsrValue;
+      this.hourPrecipitation = nowWeather[1].obsrValue;
+      this.humidityPersent = nowWeather[5].obsrValue;
+      this.preType = nowWeather[6].obsrValue;
+      this.windSpeed = nowWeather[9].obsrValue;
     },
     showIcon(val) {
+      // console.log("val = ", val);
       let shortTerm = val;
       let skyNum = shortTerm.findIndex((val) => val.category === "SKY");
       let skyData = shortTerm[skyNum];
@@ -239,6 +242,7 @@ export default {
       let dayAftRain = [];
       let datas = param;
       this.forecast = [];
+
       for (let i = 0; i < datas.length; i++) {
         if (tomorrow === datas[i].fcstDate) {
           if ("SKY" === datas[i].category) {
@@ -312,8 +316,8 @@ export default {
         icon: dayAftIcon,
         temp: `${dayAftTmx}\xB0/${dayAftTmn}\xB0`,
       };
-      // console.log(dayAftWeather, tomWeather);
       this.forecast.push(tomWeather, dayAftWeather);
+      bus.$emit("end:spinner");
     },
     getMode(array) {
       // 1. 출연 빈도 구하기
@@ -338,37 +342,29 @@ export default {
     this.checkDay();
   },
   computed: {
-    checkWeather() {
-      return this.$store.state.nowWeatherData;
+    checkWeatherDatas() {
+      // 여러개인 데이터를 하나로 묶어서 보내기
+      return this.$store.state.allData;
     },
-    checkShortTerm() {
-      return this.$store.state.shortTermData;
-    },
-    checkThreeDaysTerm() {
-      return this.$store.state.threeDaysTem;
-    },
-    // getAddress() {
-    //   return this.$store.state.getAddress;
-    // },
   },
 
   watch: {
-    checkWeather(val) {
-      this.getWeather = val;
-      this.getWeatherdata();
-    },
-    checkShortTerm(val) {
-      this.showIcon(val);
-    },
-    checkThreeDaysTerm(val) {
-      this.get3DaysWeather(val);
+    checkWeatherDatas(payLoad) {
+      this.getWeatherdata(payLoad.nowTerm);
+      this.showIcon(payLoad.shortTerm);
+      this.get3DaysWeather(payLoad.threeDaysTerm);
     },
   },
 };
 </script>
 
-<style scoped>
+<style>
 .weather-icon {
   font-size: 5em;
+}
+/* v-slider에 disabled를 걸었을 때 color 설정 */
+.v-slider__track-fill {
+  border-color: #2196f3 !important;
+  background-color: #2196f3 !important;
 }
 </style>

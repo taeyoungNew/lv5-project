@@ -100,7 +100,7 @@ export default {
   },
   methods: {
     detailsInfo(params) {
-      if (params !== "" || null) {
+      if (params !== "") {
         this.detailDatas = [
           {
             dataValue: params.pm10Value,
@@ -132,8 +132,12 @@ export default {
     },
   },
   watch: {
-    checkAirData(val) {
-      this.detailsInfo(val);
+    async checkAirData(val) {
+      try {
+        await this.detailsInfo(val);
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
 };

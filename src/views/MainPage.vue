@@ -12,7 +12,7 @@
               <kakao-map />
             </v-card>
           </v-col>
-          <v-col v-if="!!getAddress">
+          <v-col v-if="mainCard">
             <v-card class="pa-3" outlined>
               <v-row>
                 <v-col>
@@ -30,17 +30,21 @@
               <air-inpo />
             </v-card>
           </v-col>
-          <v-col v-else>
-            <before-seach />
+          <v-col v-if="!pageManager">
+            <before-search />
+          </v-col>
+          <v-col v-if="errCard">
+            <err-card />
           </v-col>
         </v-row>
       </v-container>
     </v-card>
     <v-card outlined>
       <v-container>
-        <v-card class="pa-0" outlined>
+        <v-card v-if="errCard === false" class="pa-0" outlined>
           <short-term />
         </v-card>
+        <v-card v-else-if="errCard === true" class="pa-3" outlined></v-card>
       </v-container>
     </v-card>
   </v-container>
@@ -54,7 +58,8 @@ import ShowWeather from "@/components/ShowWeather.vue";
 import ShortTerm from "@/components/ShortTerm.vue";
 import SpinnerComponent from "@/components/common/SpinnerComponent.vue";
 import bus from "@/utils/bus.js";
-import BeforeSeach from "@/components/BeforeSeach.vue";
+import BeforeSearch from "@/components/BeforeSearch.vue";
+import ErrCard from "@/components/ErrCard.vue";
 
 export default {
   components: {
@@ -64,13 +69,16 @@ export default {
     ShowWeather,
     ShortTerm,
     SpinnerComponent,
-    BeforeSeach,
+    BeforeSearch,
+    ErrCard,
   },
   data() {
     return {
       getAddress: "",
       addressName: "",
       loadingStatus: false,
+      errCard: false,
+      mainCard: false,
     };
   },
   created() {
@@ -100,6 +108,9 @@ export default {
     checkAddress() {
       return this.$store.state.address;
     },
+    pageManager() {
+      return this.$store.state.nowWeatherData;
+    },
     vuetiHeight() {
       switch (this.$vuetify.breakpoint.name) {
         case "xs":
@@ -116,6 +127,19 @@ export default {
     },
   },
   watch: {
+    pageManager(val) {
+      val.map((x) => {
+        if (x.category === "T1H") {
+          if (parseInt(x.obsrValue) > 0) {
+            this.mainCard = true;
+            this.errCard = false;
+          } else if (parseInt(x.obsrValue) < 0) {
+            this.mainCard = false;
+            this.errCard = true;
+          }
+        }
+      });
+    },
     checkAddress(val) {
       this.getAddress = val;
     },

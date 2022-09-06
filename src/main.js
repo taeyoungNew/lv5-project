@@ -18,6 +18,7 @@ import {
   faDroplet,
   faLocationDot,
   faMagnifyingGlass,
+  faCircleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faFaceGrinSquint,
@@ -53,7 +54,8 @@ library.add(
   faDroplet,
   faLocationDot,
   faMagnifyingGlass,
-  faCircleQuestion
+  faCircleQuestion,
+  faCircleExclamation
 );
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 

@@ -12,20 +12,38 @@ Vue.use(Vuex);
 Vue.config.devtools = true;
 
 export default new Vuex.Store({
+  // computed가 state의 값 변경에 오락가락한 이유
+  // 초기값을 세팅하지 않아서 였다.
+  // 따라서 nowWeatherData 등에 null값을 초기값으로 설정하였더니
+  // 잘 감지한다.
   state: {
+    allData: "",
     address: "",
     defaultSerch: "전국",
     airDatas: [],
     findAreaData: "",
     mapOnWeatherDatas: "",
-    nowWeatherData: "",
-    shortTermData: "",
-    threeDaysTem: "",
     presentTime: "",
     gridX: "",
     gridY: "",
+    nowWeatherData: "",
+  },
+  getters: {
+    sandShortTerm: function (state) {
+      const weatherDatas = {
+        shortTerm: state.allData.shortTerm,
+        threeDaysTerm: state.allData.threeDaysTerm,
+      };
+      return weatherDatas;
+    },
+    checkErr: function (state) {
+      return state.nowWeatherData;
+    },
   },
   mutations: {
+    SAVE_ALL_DATA(state, param) {
+      state.allData = param;
+    },
     SAVE_SEARCH_ADDRESS(state, param) {
       state.address = param;
     },
@@ -45,14 +63,8 @@ export default new Vuex.Store({
     SAVE_MAP_ON_WEATHER_DATAS(state, params) {
       state.mapOnWeatherDatas = params;
     },
-    SAVE_NOW_WEATHER_DATAS(state, params) {
-      state.nowWeatherData = params;
-    },
-    SAVE_SHORT_WEATER_DATAS(state, params) {
-      state.shortTermData = params;
-    },
-    SAVE_TREEDAYS_DATAS(state, params) {
-      state.threeDaysTem = params;
+    SAVE_NOW_WEATHER_DATAS(state, param) {
+      state.nowWeatherData = param;
     },
   },
   actions: {
@@ -77,13 +89,18 @@ export default new Vuex.Store({
     SEARCH_DATA_NUM(context, param) {
       context.commit("SEARCH_AREA", param);
     },
-
-    GET_GRIDS(context, gridXY) {
+    // INIT_NOW_WEATHER(context) {
+    //   context.commit("SAVE_NOW_WEATHER_DATAS", "초단기실황");
+    // },
+    async GET_GRIDS(context, gridXY) {
+      let allData = {};
       // console.log("gridXY= ", gridXY["gridX"], gridXY["gridY"]);
       context.commit("SAVE_GRIDS", gridXY);
-      getNowTerm()
+      // 초단기실황 데이터가져오기
+      await getNowTerm()
         .then(function (res) {
           // console.log("여기 = ", res);
+          allData.nowTerm = res.data.response.body.items.item;
           context.commit(
             "SAVE_NOW_WEATHER_DATAS",
             res.data.response.body.items.item
@@ -92,32 +109,34 @@ export default new Vuex.Store({
         .catch(function (error) {
           console.log(error);
         });
-
-      getShortTerm()
+      // 초단기예보 데이터가져오기
+      await getShortTerm()
         .then(function (res) {
-          context.commit(
-            "SAVE_SHORT_WEATER_DATAS",
-            res.data.response.body.items.item
-          );
+          allData.shortTerm = res.data.response.body.items.item;
+          // context.commit(
+          //   "SAVE_SHORT_WEATER_DATAS",
+          //   res.data.response.body.items.item
+          // );
         })
         .catch(function (error) {
           console.log(error);
         });
-
-      threeDaysWeather()
+      // 단기예보 데이터 가져오기
+      await threeDaysWeather()
         .then(function (res) {
-          context.commit(
-            "SAVE_TREEDAYS_DATAS",
-            res.data.response.body.items.item
-          );
+          allData.threeDaysTerm = res.data.response.body.items.item;
+          // context.commit(
+          //   "SAVE_TREEDAYS_DATAS",
+          //   res.data.response.body.items.item
+          // );
         })
         .catch(function (error) {
           console.log(error);
         });
+      context.commit("SAVE_ALL_DATA", allData);
     },
     WEATHER_ON_MAP(context, payLoad) {
       context.commit("SAVE_MAP_ON_WEATHER_DATAS", payLoad);
     },
   },
-  modules: {},
 });

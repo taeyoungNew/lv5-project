@@ -40,8 +40,8 @@ export default {
     btnTowColor: "secondary",
     showShortTem: "today",
     value: [1, 4, 2, 5, 6, 10],
-    shortTerm: "",
-    threeDaysTem: "",
+    shortTerm: [],
+    threeDaysTerm: [],
     skyStatus: "",
     currentTemperature: "",
     todayHeaders: [
@@ -58,6 +58,7 @@ export default {
       { text: "풍속 m/s", value: "WSD" },
     ],
     todayDatas: [],
+    payLoad: [],
     tomorrowHeaders: [
       {
         text: "시간",
@@ -91,26 +92,17 @@ export default {
         this.showShortTem = "tomorrow";
       }
     },
-
-    // isLoading() {
-    //   this.loadingStatus = !this.loadingStatus;
-    // },
     getWeatherData() {
-      this.todayDatas = [];
-      this.tomorrowDatas = [];
-      // let shortTerm = this.shortTerm;
-      // let threeDaysTem = this.threeDaysTem;
       this.dateData = getTimeNow();
-
       this.time = String(Number(this.dateData.hours));
-
       for (let num = 1; num < 24; num++) {
         this.todayProperty(num);
       }
-
       for (let num = 0; num < 24; num++) {
         this.tomorrowProperty(num);
       }
+      // 이벤트버스 닫기
+      bus.$emit("end:spinner");
     },
     // 오늘 날씨
     todayProperty(num) {
@@ -119,7 +111,7 @@ export default {
       let fcstValue = "";
       let time = "";
       let date = String(Number(this.dateData.date));
-      let threeDaysTem = this.threeDaysTem;
+      let threeDaysTerm = this.threeDaysTerm;
       let shortTerm = this.shortTerm;
       time = this.time;
       time = String(Number(this.time) + num) + "00";
@@ -136,6 +128,7 @@ export default {
       if (checkData) {
         // map을 활용한 초단기예보 저장방법
         shortTerm.map((x) => {
+          console.log(x);
           // console.log("date = ", date);
           if (x.fcstDate === date) {
             if (x.fcstTime === time) {
@@ -199,7 +192,7 @@ export default {
         });
       } else if (checkData === undefined) {
         // map으로 단기예보 저장
-        threeDaysTem.map((x) => {
+        threeDaysTerm.map((x) => {
           if (x.fcstDate === date) {
             if (x.fcstTime === time) {
               category = x.category;
@@ -253,7 +246,7 @@ export default {
     },
     // 내일 날씨
     tomorrowProperty(num) {
-      let threeDaysTem = this.threeDaysTem;
+      let threeDaysTerm = this.threeDaysTerm;
       let shortTerm = this.shortTerm;
       let saveData = {};
       let category = "";
@@ -342,7 +335,7 @@ export default {
       } else if (checkData === undefined) {
         // console.log("내일단기예보 저장");
         // map으로 단기예보 저장
-        threeDaysTem.map((x) => {
+        threeDaysTerm.map((x) => {
           // console.log(x.fcstDate);
           // console.log(date);
           if (x.fcstDate === tomorrow) {
@@ -397,30 +390,29 @@ export default {
               );
             }
           );
-          // 이벤트버스 닫기
         });
-        bus.$emit("end:spinner");
       }
     },
   },
   computed: {
-    checkWeatherData() {
-      let threeDaysTem = this.$store.state.threeDaysTem;
-      let shortTem = this.$store.state.shortTermData;
-      let payLoad = [];
-      payLoad.push(threeDaysTem, shortTem);
-      return payLoad;
+    getTermData() {
+      return this.$store.getters.sandShortTerm;
     },
   },
-
   watch: {
-    async checkWeatherData(payLoad) {
-      this.threeDaysTem = payLoad[0];
-      this.shortTerm = payLoad[1];
+    getTermData(payLoad) {
+      this.shortTerm = [];
+      this.threeDaysTerm = [];
+      this.todayDatas = [];
+      this.tomorrowDatas = [];
+      payLoad.shortTerm.map((x) => {
+        this.shortTerm.push(x);
+      });
+      payLoad.threeDaysTerm.map((x) => {
+        this.threeDaysTerm.push(x);
+      });
 
-      if (this.threeDaysTem) {
-        await this.getWeatherData();
-      }
+      this.getWeatherData();
     },
   },
 };
