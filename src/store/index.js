@@ -23,12 +23,10 @@ export default new Vuex.Store({
     airDatas: [],
     findAreaData: "",
     mapOnWeatherDatas: "",
-    nowWeatherData: "",
-    shortTerm: "",
-    threeDaysTerm: "",
     presentTime: "",
     gridX: "",
     gridY: "",
+    nowWeatherData: "",
   },
   getters: {
     sandShortTerm: function (state) {
@@ -65,14 +63,8 @@ export default new Vuex.Store({
     SAVE_MAP_ON_WEATHER_DATAS(state, params) {
       state.mapOnWeatherDatas = params;
     },
-    SAVE_NOW_WEATHER_DATAS(state, params) {
-      state.nowWeatherData = params;
-    },
-    SAVE_SHORT_WEATER_DATAS(state, params) {
-      state.shortTerm = params;
-    },
-    SAVE_TREEDAYS_DATAS(state, params) {
-      state.threeDaysTerm = params;
+    SAVE_NOW_WEATHER_DATAS(state, param) {
+      state.nowWeatherData = param;
     },
   },
   actions: {
@@ -147,9 +139,4 @@ export default new Vuex.Store({
       context.commit("SAVE_MAP_ON_WEATHER_DATAS", payLoad);
     },
   },
-  // getters: {
-  //   getNowWeather: (state) => {
-  //     return state.nowWeatherData;
-  //   },
-  // },
 });
